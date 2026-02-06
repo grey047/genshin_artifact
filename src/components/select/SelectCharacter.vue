@@ -1,24 +1,39 @@
 <template>
-    <el-cascader
-        :model-value="modelValue"
-        @update:modelValue="handleInput"
-        :placeholder="t('misc.character')"
-        :options="options"
-    >
-        <template #default="{ node, data }">
-            <div class="option-item flex-row">
-                <template v-if="node.isLeaf">
-                    <div class="option-item flex-row">
-                        <img :src="data.avatar">
-                        <span :style="{ color: getColor(data.star) }">{{ data.label }}</span>
-                    </div>
-                </template>
-                <template v-else>
-                    <span>{{ data.label }}</span>
-                </template>
-            </div>
-        </template>
-    </el-cascader>
+    <div class="flex-row" style="gap: 8px">
+        <el-cascader
+            :model-value="modelValue"
+            @update:modelValue="handleInput"
+            :placeholder="t('misc.character')"
+            :options="options"
+        >
+            <template #default="{ node, data }">
+                <div class="option-item flex-row">
+                    <template v-if="node.isLeaf">
+                        <div class="option-item flex-row">
+                            <img :src="data.avatar">
+                            <span :style="{ color: getColor(data.star) }">{{ data.label }}</span>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <span>{{ data.label }}</span>
+                    </template>
+                </div>
+            </template>
+        </el-cascader>
+
+        <!-- Skirk special tooltip -->
+        <el-tooltip v-if="modelValue === 'Skirk'" placement="right">
+            <template #content>
+                <div style="max-width: 200px">
+                    <b>Skirk Tips:</b><br/>
+                    • Void Rift 默认 3 层<br/>
+                    • 七相模式下普攻倍率更高<br/>
+                    • 大招依赖 Serpent Points
+                </div>
+            </template>
+            <el-tag type="warning" size="small">ℹ️ Skirk</el-tag>
+        </el-tooltip>
+    </div>
 </template>
 
 <script>

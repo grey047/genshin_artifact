@@ -52,21 +52,32 @@ impl CharacterCommonData {
         }
     }
 
-    pub fn base_value(array: &[i32; 14], level: usize, ascend: bool) -> f64 {
-        if level < 20 || (level == 20 && !ascend) {
+    pub fn base_value(array: &[i32; 15], level: usize, _ascend: bool) -> f64 {
+        // 数组结构: [Lv1, Lv20, Lv20+, Lv40, Lv40+, Lv50, Lv50+, Lv60, Lv60+, Lv70, Lv70+, Lv80, Lv80+, Lv90, Lv100]
+        // 索引:       0     1      2      3      4      5      6      7      8      9      10     11     12     13      14
+        // 注意: Lv90 以后没有突破，所以 Lv91-100 使用线性插值
+        
+        if level < 20 {
             (level - 1) as f64 * (array[1] - array[0]) as f64 / 19.0 + array[0] as f64
-        } else if level < 40 || (level == 40 && !ascend) {
+        } else if level < 40 {
             (level - 20) as f64 * (array[3] - array[2]) as f64 / 20.0 + array[2] as f64
-        } else if level < 50 || (level == 50 && !ascend) {
+        } else if level < 50 {
             (level - 40) as f64 * (array[5] - array[4]) as f64 / 10.0 + array[4] as f64
-        } else if level < 60 || (level == 60 && !ascend) {
+        } else if level < 60 {
             (level - 50) as f64 * (array[7] - array[6]) as f64 / 10.0 + array[6] as f64
-        } else if level < 70 || (level == 70 && !ascend) {
+        } else if level < 70 {
             (level - 60) as f64 * (array[9] - array[8]) as f64 / 10.0 + array[8] as f64
-        } else if level < 80 || (level == 80 && !ascend) {
+        } else if level < 80 {
             (level - 70) as f64 * (array[11] - array[10]) as f64 / 10.0 + array[10] as f64
-        } else {
+        } else if level < 90 {
             (level - 80) as f64 * (array[13] - array[12]) as f64 / 10.0 + array[12] as f64
+        } else if level <= 100 {
+            // Lv90 到 Lv100: 线性插值
+            let lv90 = array[13] as f64;
+            let lv100 = array[14] as f64;
+            (level - 90) as f64 * (lv100 - lv90) / 10.0 + lv90
+        } else {
+            array[14] as f64
         }
     }
 

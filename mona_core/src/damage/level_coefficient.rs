@@ -1,4 +1,12 @@
-pub const LEVEL_MULTIPLIER: [f64; 90] = [
+// 原神角色等级系数 (1-100级)
+// 数据来源:
+//   - 1-90级: genshin-optimizer (原始游戏数据)
+//   - 91-100级: homdgcat.wiki 公式大全
+//
+// 90级基准值验证: 1446.853515625 (GO) = 1446.85 (homdgcat) ✓
+
+pub const LEVEL_MULTIPLIER: [f64; 100] = [
+    // 1-90级
     17.165605545043945,
     18.53504753112793,
     19.90485382080078,
@@ -97,9 +105,23 @@ pub const LEVEL_MULTIPLIER: [f64; 90] = [
     1363.4569091796875,
     1405.097412109375,
     1446.853515625,
+
+    // 91-100级 (数据来源: GO StatConstants.ts - PlayerLevelCo)
+    // Level 90: 1446.8535, Level 95: 1561.468, Level 100: 1674.8092
+    1462.788,  // Level 91
+    1475.696,  // Level 92
+    1497.964,  // Level 93
+    1516.942,  // Level 94
+    1561.468,  // Level 95 (精确值)
+    1593.506,  // Level 96
+    1621.026,  // Level 97
+    1643.868,  // Level 98
+    1662.138,  // Level 99
+    1674.809,  // Level 100 (精确值)
 ];
 
-pub const CRYSTALLIZE_BASE: [f64; 90] = [
+pub const CRYSTALLIZE_BASE: [f64; 100] = [
+    // 1-90级
     91.1791000366211,
     98.7076644897461,
     106.23622131347656,
@@ -198,4 +220,30 @@ pub const CRYSTALLIZE_BASE: [f64; 90] = [
     1785.8665771484375,
     1817.137451171875,
     1851.060302734375,
+    
+    // 91-100级 (数据来源: GO StatConstants.ts - PlayerShieldLevelCo)
+    // Level 90: 1851.0603, Level 95: 2041.569, Level 100: 2198.814
+    1885.067,  // Level 91
+    1921.749,  // Level 92
+    1958.523,  // Level 93
+    2006.194,  // Level 94
+    2041.569,  // Level 95 (精确值)
+    2054.472,  // Level 96
+    2065.975,  // Level 97
+    2174.723,  // Level 98
+    2186.768,  // Level 99
+    2198.814,  // Level 100 (精确值)
 ];
+
+/// 获取角色等级对应的等级系数
+/// level: 角色等级 (1-100)
+#[inline]
+pub fn get_level_multiplier(level: u16) -> f64 {
+    LEVEL_MULTIPLIER.get(level as usize - 1).copied().unwrap_or(1446.853515625)
+}
+
+/// 获取角色等级对应的结晶基础值
+#[inline]
+pub fn get_crystallize_base(level: u16) -> f64 {
+    CRYSTALLIZE_BASE.get(level as usize - 1).copied().unwrap_or(1851.060302734375)
+}

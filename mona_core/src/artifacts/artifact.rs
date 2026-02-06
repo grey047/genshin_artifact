@@ -78,6 +78,11 @@ pub enum ArtifactSetName {
     ObsidianCodex,
     LongNightsOath,
     FinaleOfTheDeepGalleries,
+    // New artifact sets - pending verification
+    NightOfTheSkysUnveiling,
+    SilkenMoonsSerenade,
+    ADayCarvedFromRisingWinds,
+    AubadeOfMorningstarAndMoon,
 }
 
 impl ArtifactSetName {

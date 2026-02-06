@@ -53,5 +53,28 @@ pub enum CharacterSkillConfig {
     Xilonen { nightsoul: bool },
     Chasca { element_count: usize, c6_rate: f64 },
     Mavuika { after_q: bool },
+    Skirk {
+        in_seven_phase: bool,           // 七相一闪模式
+        death_stacks: usize,             // 死河渡断层数 (0-3)，C4 也复用此层数
+        serpent_points: f64,             // 蛇之狡谋点数
+        c2_active: bool,                 // C2: 施放后ATK+
+        void_realm_active: bool,         // 虚境裂隙是否生效
+    },
+    Flins {
+        in_manifest_flame: bool,       // 幽焰显迹模式
+        moonsign_level: usize,          // 月兆等级 (1-2)
+    },
+    Escoffier {
+        res_shred_active: bool,        // RES Shred 是否生效
+    },
+    Aino,
+    Columbina,
+    Dahlia,
+    Durin,
+    Ifa,
+    Jahoda,
+    Ineffa,
+    Lauma,
+    Nefer,
     NoConfig,
 }

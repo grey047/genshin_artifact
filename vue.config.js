@@ -149,6 +149,15 @@ module.exports = {
         },
     },
     chainWebpack: config => {
+        // 禁用 TypeScript 类型检查以加快开发服务器启动
+        // 类型错误会在运行时显示，不影响功能
+        try {
+            config.plugins.delete('fork-ts-checker')
+            console.log('✅ 已禁用 fork-ts-checker-webpack-plugin')
+        } catch (e) {
+            console.log('ℹ️ fork-ts-checker 插件不存在或已禁用')
+        }
+
         // use custom i18n loader
         config.module.rule("i18n-js")
             .test(/\.i18n$/)

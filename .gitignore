@@ -23,3 +23,7 @@ pnpm-debug.log*
 
 dist.tar.gz
 inspect.js
+/.research_info
+
+# Archive - 临时文件和历史记录
+/archive

@@ -8,9 +8,13 @@ pub struct CharacterStaticData {
     pub internal_name: &'static str,
     pub name_locale: I18nLocale,
     pub element: Element,
-    pub hp: [i32; 14],
-    pub atk: [i32; 14],
-    pub def: [i32; 14],
+    /// Base HP at levels: Lv1, 20, 20+, 40, 40+, 50, 50+, 60, 60+, 70, 70+, 80, 80+, 90, 100
+    /// Note: Lv91-100 are calculated by linear interpolation between Lv90 and Lv100
+    pub hp: [i32; 15],
+    /// Base ATK at levels: Lv1, 20, 20+, 40, 40+, 50, 50+, 60, 60+, 70, 70+, 80, 80+, 90, 100
+    pub atk: [i32; 15],
+    /// Base DEF at levels: Lv1, 20, 20+, 40, 40+, 50, 50+, 60, 60+, 70, 70+, 80, 80+, 90, 100
+    pub def: [i32; 15],
     pub sub_stat: CharacterSubStatFamily,
     pub weapon_type: WeaponType,
     pub star: i32,

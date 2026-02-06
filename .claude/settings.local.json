@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(wasm-pack:*)",
+      "Bash(rustc --version:*)",
+      "Bash(cargo --version:*)",
+      "Bash(cmd.exe /c \"rustc --version && cargo --version\")",
+      "Bash(powershell.exe -Command \"rustc --version; cargo --version; wasm-pack --version\")",
+      "Bash(powershell.exe:*)",
+      "Bash(curl:*)",
+      "Bash(cmd.exe /c \"\"\"C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Auxiliary\\\\Build\\\\vcvars64.bat\"\" && npm run build:wasm\")",
+      "Bash(cmd /c \"call \"\"C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Auxiliary\\\\Build\\\\vcvars64.bat\"\" && cd /d \"\"e:\\\\Moltbot\\\\workspace\\\\genshin_artifact\"\" && npm run build:wasm\")",
+      "Bash(cmd //c \"\"\"C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Auxiliary\\\\Build\\\\vcvars64.bat\"\" && cd /d E:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm\")"
+    ]
+  }
+}

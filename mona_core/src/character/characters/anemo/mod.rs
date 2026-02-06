@@ -12,6 +12,8 @@ pub mod xianyun;
 mod chasca;
 mod lanyan;
 mod yumemizuki_mizuki;
+pub mod jahoda;
+pub mod ifa;
 
 pub use jean::Jean;
 pub use kaedehara_kazuha::KaedeharaKazuha;
@@ -27,3 +29,5 @@ pub use xianyun::Xianyun;
 pub use chasca::Chasca;
 pub use lanyan::Lanyan;
 pub use yumemizuki_mizuki::YumemizukiMizuki;
+pub use jahoda::Jahoda;
+pub use ifa::Ifa;

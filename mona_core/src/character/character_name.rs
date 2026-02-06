@@ -124,4 +124,17 @@ pub enum CharacterName {
     YumemizukiMizuki,
     Iansan,
     Varesa,
+    // New characters - data pending verification
+    Aino,
+    Columbina,
+    Dahlia,
+    Durin,
+    Escoffier,
+    Flins,
+    Ifa,
+    Ineffa,
+    Jahoda,
+    Lauma,
+    Nefer,
+    Skirk,
 }

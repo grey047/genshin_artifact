@@ -20,6 +20,8 @@ pub struct TransformativeDamage {
     pub burgeon: f64,
     pub burning: f64,
     pub crystallize: f64,
+    // 月反应
+    pub lunarcharged: f64,
 }
 
 #[inline]
@@ -33,6 +35,11 @@ fn get_reaction_coefficient(t: TransformativeType) -> f64 {
         ElectroCharged => 1.2,
         Shatter => 1.5,
         Burning => 0.25,
+        // 月反应 (数据来源: Genshin-Optimizer)
+        // LunarCharged: 1.8 倍率 (可暴击)
+        LunarCharged => 1.8,
+        // LunarBloom 和 LunarCrystallize 使用 base damage = 0 (特殊处理)
+        LunarBloom | LunarCrystallize => 0.0,
     }
 }
 
@@ -80,6 +87,11 @@ pub fn transformative_damage_simple(level: usize, em: f64, enemy: &Enemy) -> Tra
     let dmg_burgeon = base_burgeon * res_ratio_dendro * (1.0 + em_bonus);
     let dmg_burning = base_burning * res_ratio_pyro * (1.0 + em_bonus);
     let shield_crystallize = CRYSTALLIZE_BASE[level - 1] * (1.0 + 40.0 / 9.0 * em / (em + 1400.0));
+    
+    // 月反应 - LunarCharged (月岩充电)
+    // 触发元素: 雷, 倍率: 1.8, 使用雷元素抗性
+    let base_lunarcharged = get_transformative_base(level, TransformativeType::LunarCharged);
+    let dmg_lunarcharged = base_lunarcharged * res_ratio_electro * (1.0 + em_bonus);
 
 
     TransformativeDamage {
@@ -96,6 +108,7 @@ pub fn transformative_damage_simple(level: usize, em: f64, enemy: &Enemy) -> Tra
         burgeon: dmg_burgeon,
         burning: dmg_burning,
         crystallize: shield_crystallize,
+        lunarcharged: dmg_lunarcharged,
     }
 }
 
@@ -159,6 +172,10 @@ pub fn transformative_damage<A: Attribute>(level: usize, attribute: &A, enemy: &
     let dmg_burgeon = base_burgeon * res_ratio_dendro * (1.0 + em_bonus + enhance_burgeon);
     let dmg_burning = base_burning * res_ratio_pyro * (1.0 + em_bonus + enhance_burning);
     let shield_crystallize = CRYSTALLIZE_BASE[level - 1] * (1.0 + 40.0 / 9.0 * em / (em + 1400.0));
+    
+    // 月反应 - LunarCharged (月岩充电)
+    let base_lunarcharged = get_transformative_base(level, TransformativeType::LunarCharged);
+    let dmg_lunarcharged = base_lunarcharged * res_ratio_electro * (1.0 + em_bonus);
 
     TransformativeDamage {
         swirl_cryo: dmg_swirl_cryo,
@@ -174,6 +191,7 @@ pub fn transformative_damage<A: Attribute>(level: usize, attribute: &A, enemy: &
         burgeon: dmg_burgeon,
         burning: dmg_burning,
         crystallize: shield_crystallize,
+        lunarcharged: dmg_lunarcharged,
     }
 }
 

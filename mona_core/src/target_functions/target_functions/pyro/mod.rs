@@ -14,6 +14,7 @@ pub mod dehya_default;
 pub mod lyney_default;
 pub mod arlecchino_default;
 mod mavuika_default;
+pub mod durin_default;
 
 pub use amber_default::AmberDefaultTargetFunction;
 pub use bennett_damage::BennettDamageTargetFunction;
@@ -31,3 +32,4 @@ pub use dehya_default::DehyaDefaultTargetFunction;
 pub use lyney_default::LyneyDefaultTargetFunction;
 pub use arlecchino_default::ArlecchinoDefaultTargetFunction;
 pub use mavuika_default::MavuikaDefaultTargetFunction;
+pub use durin_default::DurinDefaultTargetFunction;
