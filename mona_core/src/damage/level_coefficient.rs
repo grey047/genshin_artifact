@@ -247,3 +247,21 @@ pub fn get_level_multiplier(level: u16) -> f64 {
 pub fn get_crystallize_base(level: u16) -> f64 {
     CRYSTALLIZE_BASE.get(level as usize - 1).copied().unwrap_or(1851.060302734375)
 }
+
+/// Lunar Reaction Level Multipliers
+/// Level 90: 1561.47
+/// Level 100: 1674.81
+/// These are specifically for Lunar reactions (not transformative)
+#[inline]
+pub fn get_lunar_level_multiplier(level: u16) -> f64 {
+    match level {
+        90 => 1561.47,
+        91 => 1562.79,
+        92 => 1575.70,
+        93 => 1597.96,
+        94 => 1616.94,
+        95 => 1674.81,  // Same as 100 for now
+        _ if level >= 95 => 1674.81,
+        _ => LEVEL_MULTIPLIER.get(level as usize - 1).copied().unwrap_or(1446.853515625),
+    }
+}

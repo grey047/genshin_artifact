@@ -236,12 +236,79 @@ impl DamageBuilder for SimpleDamageBuilder {
             Some(dmg)
         };
 
+        // Lunar-Charged: Electro + Hydro reaction
+        // Formula: Level Multiplier × 1.0 × (1 + EM Bonus) × (1 + Bonus DMG)
+        // EM Bonus: 1 + 16×EM/(EM+2000) same as transformative
+        // Direct LC multiplier: 3.0
+        let lunar_charged_damage = if element != Element::Electro {
+            None
+        } else {
+            let em_bonus_lc = 1.0 + 16.0 * em / (em + 2000.0);
+            let level_mult = LEVEL_MULTIPLIER[character_level - 1];
+            let direct_lc_multiplier = 3.0;
+            
+            let lc_base_damage = base * direct_lc_multiplier;
+            
+            let dmg = DamageResult {
+                critical: lc_base_damage * (1.0 + bonus) * (1.0 + critical_damage),
+                non_critical: lc_base_damage * (1.0 + bonus),
+                expectation: lc_base_damage * (1.0 + bonus) * (1.0 + critical_damage * critical_rate),
+                is_heal: false,
+                is_shield: false
+            } * (defensive_ratio * resistance_ratio);
+            Some(dmg)
+        };
+
+        // Lunar-Bloom: Hydro + Dendro reaction
+        // Formula: Level Multiplier × 1.0 × (1 + EM Bonus) × (1 + Bonus DMG)
+        // Direct LB multiplier: same as LC = 3.0
+        let lunar_bloom_damage = if element != Element::Hydro {
+            None
+        } else {
+            let em_bonus_lb = 1.0 + 16.0 * em / (em + 2000.0);
+            let direct_lb_multiplier = 3.0;
+            
+            let lb_base_damage = base * direct_lb_multiplier;
+            
+            let dmg = DamageResult {
+                critical: lb_base_damage * (1.0 + bonus) * (1.0 + critical_damage),
+                non_critical: lb_base_damage * (1.0 + bonus),
+                expectation: lb_base_damage * (1.0 + bonus) * (1.0 + critical_damage * critical_rate),
+                is_heal: false,
+                is_shield: false
+            } * (defensive_ratio * resistance_ratio);
+            Some(dmg)
+        };
+
+        // Lunar-Crystallize: Geo + Hydro reaction
+        // Formula: Level Multiplier × 0.96 × (1 + EM Bonus) × (1 + Bonus DMG)
+        // Direct LCrys multiplier: 1.6
+        let lunar_crystallize_damage = if element != Element::Hydro {
+            None
+        } else {
+            let direct_lcrys_multiplier = 1.6;
+            
+            let lcrys_base_damage = base * direct_lcrys_multiplier;
+            
+            let dmg = DamageResult {
+                critical: lcrys_base_damage * (1.0 + bonus) * (1.0 + critical_damage),
+                non_critical: lcrys_base_damage * (1.0 + bonus),
+                expectation: lcrys_base_damage * (1.0 + bonus) * (1.0 + critical_damage * critical_rate),
+                is_heal: false,
+                is_shield: false
+            } * (defensive_ratio * resistance_ratio);
+            Some(dmg)
+        };
+
         SimpleDamageResult {
             normal: normal_damage,
             melt: melt_damage,
             vaporize: vaporize_damage,
             spread: spread_damage,
             aggravate: aggravate_damage,
+            lunar_charged: lunar_charged_damage,
+            lunar_bloom: lunar_bloom_damage,
+            lunar_crystallize: lunar_crystallize_damage,
             is_shield: false,
             is_heal: false,
         }
@@ -271,6 +338,9 @@ impl DamageBuilder for SimpleDamageBuilder {
             vaporize: None,
             spread: None,
             aggravate: None,
+            lunar_charged: None,
+            lunar_bloom: None,
+            lunar_crystallize: None,
             is_heal: true,
             is_shield: false,
         };
@@ -300,6 +370,9 @@ impl DamageBuilder for SimpleDamageBuilder {
             vaporize: None,
             spread: None,
             aggravate: None,
+            lunar_charged: None,
+            lunar_bloom: None,
+            lunar_crystallize: None,
             is_shield: true,
             is_heal: false,
         };

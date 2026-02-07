@@ -35,6 +35,9 @@ pub struct SimpleDamageResult {
     pub vaporize: Option<DamageResult>,
     pub spread: Option<DamageResult>,
     pub aggravate: Option<DamageResult>,
+    pub lunar_charged: Option<DamageResult>,
+    pub lunar_bloom: Option<DamageResult>,
+    pub lunar_crystallize: Option<DamageResult>,
     pub is_heal: bool,
     pub is_shield: bool,
 }
