@@ -11,3 +11,4 @@ pub mod boolean;
 pub mod damage;
 pub mod string;
 pub mod prop;
+pub mod hexenzirkel;

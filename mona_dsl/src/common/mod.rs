@@ -25,5 +25,7 @@ impl Span {
 pub struct UnsafeDamageContext {
     pub character_common_data: *const CharacterCommonData,
     pub enemy: *const Enemy,
-    pub attribute: *const SimpleAttributeGraph2
+    pub attribute: *const SimpleAttributeGraph2,
+    pub moonsign_level: u8,  // 0, 1, or 2
+    pub is_hexenzirkel: bool,  // Whether character is a Hexenzirkel member
 }

@@ -13,6 +13,10 @@ pub struct MonaObjectDamage {
     pub aggravate: Option<DamageResult>,
     pub is_heal: bool,
     pub is_shield: bool,
+    // Lunar Reactions (Amplifying)
+    pub lunar_charged: Option<DamageResult>,
+    pub lunar_bloom: Option<DamageResult>,
+    pub lunar_crystallize: Option<DamageResult>,
 }
 
 impl MonaObjectTrait for MonaObjectDamage {
@@ -52,6 +56,27 @@ impl MonaObjectTrait for MonaObjectDamage {
                     MonaObjectDamageNumber::from_damage_result(x)
                 } else {
                     return Err(RuntimeError::new(RuntimeErrorEnum::DamageNotFound, "damage `aggravate` not exist"));
+                }
+            }
+            "lunar_charged" => {
+                if let Some(ref x) = self.lunar_charged {
+                    MonaObjectDamageNumber::from_damage_result(x)
+                } else {
+                    return Err(RuntimeError::new(RuntimeErrorEnum::DamageNotFound, "damage `lunar_charged` not exist"));
+                }
+            }
+            "lunar_bloom" => {
+                if let Some(ref x) = self.lunar_bloom {
+                    MonaObjectDamageNumber::from_damage_result(x)
+                } else {
+                    return Err(RuntimeError::new(RuntimeErrorEnum::DamageNotFound, "damage `lunar_bloom` not exist"));
+                }
+            }
+            "lunar_crystallize" => {
+                if let Some(ref x) = self.lunar_crystallize {
+                    MonaObjectDamageNumber::from_damage_result(x)
+                } else {
+                    return Err(RuntimeError::new(RuntimeErrorEnum::DamageNotFound, "damage `lunar_crystallize` not exist"));
                 }
             }
             x => return Err(RuntimeError::new(RuntimeErrorEnum::DamageNotFound, &format!("damage `{}` not exist", x)))
@@ -106,7 +131,9 @@ impl MonaObjectTrait for MonaObjectDamageNumber {
 }
 
 pub struct MonaObjectTransformativeDamage {
-    pub damage: TransformativeDamage
+    pub damage: TransformativeDamage,
+    // Lunar Reactions (Transformative)
+    pub lunarcharged: f64,  // Multiplier: 1.8
 }
 
 impl MonaObjectTrait for MonaObjectTransformativeDamage {
@@ -132,6 +159,7 @@ impl MonaObjectTrait for MonaObjectTransformativeDamage {
             "hyperbloom" => self.damage.hyperbloom,
             "crystallize" => self.damage.crystallize,
             "burning" => self.damage.burning,
+            "lunarcharged" => self.lunarcharged,
             x => {
                 return Err(RuntimeError::new(RuntimeErrorEnum::NotSupported, &format!("`TransformativeDamage` doesn't have prop name `{}`", x)));
             }

@@ -76,7 +76,9 @@ fn main() {
     let context = UnsafeDamageContext {
         character_common_data: &character.common_data,
         attribute: &attribute,
-        enemy: &enemy
+        enemy: &enemy,
+        moonsign_level: 0,
+        is_hexenzirkel: false,
     };
 
     let os = Box::new(StringOutputStream::new());
