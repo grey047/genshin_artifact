@@ -159,6 +159,11 @@ impl CharacterTrait for Ineffa {
     }
 
     fn get_target_function_by_role(_role_index: usize, _team: &TeamQuantization, _c: &CharacterCommonData, _w: &WeaponCommonData) -> Box<dyn TargetFunction> {
-        unimplemented!()
+        use crate::target_functions::target_functions::electro::IneffaDefaultTargetFunction;
+        Box::new(IneffaDefaultTargetFunction::new(&crate::target_functions::TargetFunctionConfig::IneffaDefault {
+            recharge_demand: 1.0,
+            use_skill: 0.5,
+            use_burst: 0.5,
+        }))
     }
 }

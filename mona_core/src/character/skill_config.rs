@@ -67,14 +67,18 @@ pub enum CharacterSkillConfig {
     Escoffier {
         res_shred_active: bool,        // RES Shred 是否生效
     },
-    Aino,
+    Aino {
+        c1_active: bool,           // C1: EM +80 after Skill/Burst
+        use_a4_bonus: bool,         // A4: Burst DMG +50% of EM
+        c2_active: bool,            // C2: Off-field additional water balls
+    },
     Columbina,
     Dahlia,
-    Durin,
     Ifa,
     Jahoda,
     Ineffa,
     Lauma,
     Nefer,
+    Durin { transmutation_state: usize },
     NoConfig,
 }

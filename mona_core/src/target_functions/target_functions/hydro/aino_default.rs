@@ -172,7 +172,7 @@ impl TargetFunction for AinoDefaultTargetFunction {
         type S = <Aino as CharacterTrait>::DamageEnumType;
 
         let dmg_normal = Aino::damage::<SimpleDamageBuilder>(&context, S::Normal1, &s_config, None).normal.expectation;
-        let dmg_charged = Aino::damage::<SimpleDamageBuilder>(&context, S::Charged, &s_config, None).normal.expectation;
+        let dmg_charged = Aino::damage::<SimpleDamageBuilder>(&context, S::Charged1, &s_config, None).normal.expectation;
         let dmg_skill = Aino::damage::<SimpleDamageBuilder>(&context, S::E1, &s_config, None).normal.expectation;
         let dmg_burst = Aino::damage::<SimpleDamageBuilder>(&context, S::Q1, &s_config, None).normal.expectation;
 

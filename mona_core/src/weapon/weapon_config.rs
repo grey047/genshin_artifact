@@ -121,6 +121,8 @@ pub enum WeaponConfig {
     StarcallersWatch { use_buff: bool, rate: f64 },
     SunnyMorningSleepIn { rate1: f64, rate2: f64, rate3: f64 },
     VividNotions { rate1: f64, rate2: f64 },
+    NocturnesCurtainCall { stack: f64 },
+    ReliquaryOfTruth { spectral_stack: f64 },
 
     // Bow
     PolarStar { stack: usize },

@@ -51,5 +51,6 @@ pub enum CharacterConfig {
     Skirk { in_seven_phase: bool, death_stacks: usize, serpent_points: f64, c2_active: bool, void_realm_active: bool },
     Flins { in_manifest_flame: bool, moonsign_level: usize },
     Escoffier { res_shred_active: bool },
+    Durin { transmutation_state: usize },
     NoConfig,
 }

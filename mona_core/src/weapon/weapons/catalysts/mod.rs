@@ -42,6 +42,8 @@ pub use waveriding_whirl::WaveridingWhirl;
 pub use starcallers_watch::StarcallersWatch;
 pub use sunny_morning_sleep_in::SunnyMorningSleepIn;
 pub use vivid_notions::VividNotions;
+pub use nocturnes_curtain_call::NocturnesCurtainCall;
+pub use reliquary_of_truth::ReliquaryOfTruth;
 
 pub mod lost_prayer_to_the_sacred_winds;
 pub mod skyward_atlas;
@@ -87,3 +89,5 @@ mod waveriding_whirl;
 mod starcallers_watch;
 mod sunny_morning_sleep_in;
 mod vivid_notions;
+mod nocturnes_curtain_call;
+mod reliquary_of_truth;

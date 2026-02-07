@@ -184,6 +184,8 @@ pub enum WeaponName {
     StarcallersWatch,
     SunnyMorningSleepIn,
     VividNotions,
+    NocturnesCurtainCall,
+    ReliquaryOfTruth,
 
     // bows
     PolarStar,
