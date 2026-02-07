@@ -89,6 +89,7 @@ pub enum WeaponConfig {
     FootprintOfTheRainbow { rate: f64 },
     MountainBracingBolt { rate: f64 },
     TamayurateiNoOhanashi { rate: f64 },
+    Peakbreaker { use_effect: bool },
 
     // Catalyst
     LostPrayerToTheSacredWinds { stack: f64 },

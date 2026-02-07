@@ -138,6 +138,7 @@ pub enum WeaponName {
     FootprintOfTheRainbow,
     MountainBracingBolt,
     TamayurateiNoOhanashi,
+    Peakbreaker,
 
     // catalyst
     LostPrayerToTheSacredWinds,

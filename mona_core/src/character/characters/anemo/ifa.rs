@@ -11,6 +11,7 @@ use crate::common::item_config_type::{ItemConfig, ItemConfigType};
 use crate::damage::damage_builder::DamageBuilder;
 use crate::damage::DamageContext;
 use crate::target_functions::TargetFunction;
+use crate::target_functions::target_functions::anemo::IfaDefaultTargetFunction;
 use crate::team::TeamQuantization;
 use crate::weapon::weapon_common_data::WeaponCommonData;
 
@@ -28,19 +29,21 @@ pub struct IfaSkillType {
     pub plunging_dmg3: [f64; 15],
     pub e_dmg1: [f64; 15],
     pub q_dmg1: [f64; 15],
+    pub q_dmg2: [f64; 15],
 }
 
 pub const IFA_SKILL: IfaSkillType = IfaSkillType {
-    normal_dmg1: [50.76, 38.43, 130.40, 49.60, 168.32, 74.30, 252.12, 15.00, 82.24, 279.06, 24.00, 94.60, 320.99, 20.00, 0.0],
-    normal_dmg2: [74.30, 252.12, 15.00, 82.24, 279.06, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    normal_dmg3: [24.00, 94.60, 320.99, 20.00, 105.18, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    normal_dmg4: [356.91, 48.00, 117.54, 398.84, 30.00, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    charged_dmg1: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    normal_dmg1: [0.432, 0.467, 0.502, 0.552, 0.587, 0.622, 0.672, 0.722, 0.772, 0.822, 0.872, 0.922, 0.972, 1.022, 1.072],
+    normal_dmg2: [0.384, 0.415, 0.446, 0.491, 0.522, 0.553, 0.598, 0.643, 0.688, 0.733, 0.778, 0.823, 0.868, 0.913, 0.958],
+    normal_dmg3: [0.528, 0.570, 0.612, 0.673, 0.715, 0.757, 0.819, 0.881, 0.943, 1.005, 1.067, 1.129, 1.191, 1.253, 1.315],
+    normal_dmg4: [0.0; 15],
+    charged_dmg1: [0.0; 15],
     plunging_dmg1: [0.5683; 15],
     plunging_dmg2: [1.1363; 15],
     plunging_dmg3: [1.4193; 15],
-    e_dmg1: [150.00, 160.00, 170.00, 180.00, 190.00, 200.00, 210.00, 220.00, 230.00, 240.00, 250.00, 260.00, 270.00, 280.00, 0.0],
-    q_dmg1: [200.00, 215.00, 230.00, 245.00, 260.00, 275.00, 290.00, 305.00, 320.00, 335.00, 350.00, 365.00, 380.00, 395.00, 0.0],
+    e_dmg1: [1.280, 1.382, 1.484, 1.634, 1.736, 1.838, 1.988, 2.138, 2.288, 2.486, 2.684, 2.882, 3.080, 3.278, 3.476],
+    q_dmg1: [4.160, 4.496, 4.832, 5.312, 5.648, 5.984, 6.464, 6.944, 7.424, 8.048, 8.672, 9.296, 9.920, 10.544, 11.168],
+    q_dmg2: [1.664, 1.798, 1.932, 2.125, 2.259, 2.393, 2.586, 2.779, 2.972, 3.224, 3.476, 3.728, 3.980, 4.232, 4.484],
 };
 
 damage_enum!(
@@ -55,6 +58,7 @@ damage_enum!(
     Plunging3
     E1
     Q1
+    Q2
 );
 
 impl IfaDamageEnum {
@@ -66,7 +70,7 @@ impl IfaDamageEnum {
             Plunging1 => SkillType::PlungingAttackInAction,
             Plunging2 | Plunging3 => SkillType::PlungingAttackOnGround,
             E1 => SkillType::ElementalSkill,
-            Q1 => SkillType::ElementalBurst
+            Q1 | Q2 => SkillType::ElementalBurst
         }
     }
 }
@@ -90,10 +94,10 @@ impl CharacterTrait for Ifa {
             en: "Ifa",
         ),
         element: Element::Anemo,
-        hp: [806, 2318, 2318, 4536, 4536, 4536, 4536, 5746, 5746, 5746, 5746, 6955, 6955, 6955, 8064],
-        atk: [14, 40, 40, 80, 80, 80, 80, 101, 101, 101, 101, 122, 122, 122, 142],
-        def: [48, 139, 139, 272, 272, 272, 272, 344, 344, 344, 344, 417, 417, 417, 484],
-        sub_stat: CharacterSubStatFamily::ATK288,
+        hp: [800, 2081, 2774, 4151, 4632, 5325, 5968, 6670, 7151, 7854, 8334, 9047, 9528, 10264, 10264],
+        atk: [45, 118, 157, 235, 262, 302, 338, 378, 405, 446, 473, 513, 541, 572, 572],
+        def: [45, 117, 156, 233, 260, 299, 336, 376, 403, 443, 470, 510, 538, 576, 576],
+        sub_stat: CharacterSubStatFamily::CriticalRate192,
         weapon_type: WeaponType::Catalyst,
         star: 5,
         skill_name1: locale!(
@@ -133,7 +137,8 @@ impl CharacterTrait for Ifa {
         ),
         skill3: skill_map!(
             IfaDamageEnum
-            Q1 locale!(zh_cn: "技能伤害", en: "Skill DMG")
+            Q1 locale!(zh_cn: "爆发伤害", en: "Burst DMG")
+            Q2 locale!(zh_cn: "标记伤害", en: "Sedation Mark DMG")
         )
     };
 
@@ -142,8 +147,25 @@ impl CharacterTrait for Ifa {
 
     fn damage_internal<D: DamageBuilder>(context: &DamageContext<'_, D::AttributeType>, s: usize, _config: &CharacterSkillConfig, fumo: Option<Element>) -> D::Result {
         let skill: IfaDamageEnum = num::FromPrimitive::from_usize(s).unwrap();
-        let (s1, _s2, _s3) = context.character_common_data.get_3_skill();
-        let builder = D::new();
+        let (s1, _s2, s3) = context.character_common_data.get_3_skill();
+        
+        let ratio = match skill {
+            IfaDamageEnum::Normal1 => IFA_SKILL.normal_dmg1[s1],
+            IfaDamageEnum::Normal2 => IFA_SKILL.normal_dmg2[s1],
+            IfaDamageEnum::Normal3 => IFA_SKILL.normal_dmg3[s1],
+            IfaDamageEnum::Normal4 => IFA_SKILL.normal_dmg4[s1],
+            IfaDamageEnum::Charged => IFA_SKILL.charged_dmg1[s1],
+            IfaDamageEnum::Plunging1 => IFA_SKILL.plunging_dmg1[s1],
+            IfaDamageEnum::Plunging2 => IFA_SKILL.plunging_dmg2[s1],
+            IfaDamageEnum::Plunging3 => IFA_SKILL.plunging_dmg3[s1],
+            IfaDamageEnum::E1 => IFA_SKILL.e_dmg1[s1],
+            IfaDamageEnum::Q1 => IFA_SKILL.q_dmg1[s3],
+            IfaDamageEnum::Q2 => IFA_SKILL.q_dmg2[s3],
+        };
+        
+        let mut builder = D::new();
+        builder.add_atk_ratio("Skill Ratio", ratio);
+        
         builder.damage(
             &context.attribute,
             &context.enemy,
@@ -159,6 +181,10 @@ impl CharacterTrait for Ifa {
     }
 
     fn get_target_function_by_role(_role_index: usize, _team: &TeamQuantization, _c: &CharacterCommonData, _w: &WeaponCommonData) -> Box<dyn TargetFunction> {
-        unimplemented!()
+        Box::new(IfaDefaultTargetFunction::new(&crate::target_functions::TargetFunctionConfig::IfaDefault {
+            recharge_demand: 1.0,
+            use_skill: 0.5,
+            use_burst: 0.5,
+        }))
     }
 }

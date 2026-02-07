@@ -73,7 +73,7 @@ pub enum CharacterSkillConfig {
         c2_active: bool,            // C2: Off-field additional water balls
     },
     Columbina,
-    Dahlia,
+    Dahlia { is_burning: bool },
     Ifa,
     Jahoda,
     Ineffa,

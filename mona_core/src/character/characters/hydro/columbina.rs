@@ -201,7 +201,24 @@ impl CharacterTrait for Columbina {
     const CONFIG_DATA: Option<&'static [ItemConfig]> = None;
 
     #[cfg(not(target_family = "wasm"))]
-    const CONFIG_SKILL: Option<&'static [ItemConfig]> = None;
+    const CONFIG_SKILL: Option<&'static [ItemConfig]> = Some(&[
+        ItemConfig {
+            name: "moonsign_level",
+            title: locale!(
+                zh_cn: "月兆等级",
+                en: "Moonsign Level"
+            ),
+            config: ItemConfigType::Int { min: 1, max: 2, default: 2 },
+        },
+        ItemConfig {
+            name: "has_moonsign_benediction",
+            title: locale!(
+                zh_cn: "月兆祝福",
+                en: "Moonsign Benediction"
+            ),
+            config: ItemConfigType::Bool { default: true },
+        },
+    ]);
 
     fn damage_internal<D: DamageBuilder>(context: &DamageContext<'_, D::AttributeType>, s: usize, _config: &CharacterSkillConfig, fumo: Option<Element>) -> D::Result {
         let s: ColumbinaDamageEnum = FromPrimitive::from_usize(s).unwrap();
@@ -253,6 +270,7 @@ impl CharacterTrait for Columbina {
             use_e3_lc: 0.2,
             use_e3_lb: 0.1,
             use_e3_lcrys: 0.15,
+            moonsign_level: 2,
         })
     }
 }
@@ -275,6 +293,7 @@ pub struct ColumbinaDefaultTargetFunction {
     pub use_e3_lc: f64,
     pub use_e3_lb: f64,
     pub use_e3_lcrys: f64,
+    pub moonsign_level: usize,
 }
 
 impl ColumbinaDefaultTargetFunction {
@@ -288,6 +307,7 @@ impl ColumbinaDefaultTargetFunction {
                 use_e3_lc,
                 use_e3_lb,
                 use_e3_lcrys,
+                moonsign_level,
             } => Self {
                 recharge_demand,
                 use_skill,
@@ -296,6 +316,7 @@ impl ColumbinaDefaultTargetFunction {
                 use_e3_lc,
                 use_e3_lb,
                 use_e3_lcrys,
+                moonsign_level,
             },
             _ => Self {
                 recharge_demand: 1.0,
@@ -305,6 +326,7 @@ impl ColumbinaDefaultTargetFunction {
                 use_e3_lc: 0.2,
                 use_e3_lb: 0.1,
                 use_e3_lcrys: 0.15,
+                moonsign_level: 2,
             }
         }
     }
@@ -384,6 +406,14 @@ impl TargetFunctionMetaTrait for ColumbinaDefaultTargetFunction {
                 en: "Interference Cryst Ratio"
             ),
             config: ItemConfigType::Float { default: 0.15, min: 0.0, max: 1.0 }
+        },
+        ItemConfig {
+            name: "moonsign_level",
+            title: locale!(
+                zh_cn: "月兆等级",
+                en: "Moonsign Level"
+            ),
+            config: ItemConfigType::Int { min: 1, max: 2, default: 2 },
         },
     ]);
 

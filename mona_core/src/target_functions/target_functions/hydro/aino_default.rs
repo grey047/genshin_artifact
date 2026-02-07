@@ -24,6 +24,7 @@ pub struct AinoDefaultTargetFunction {
     pub use_charged_attack: f64,
     pub use_skill: f64,
     pub use_burst: f64,
+    pub moonsign_level: usize,
 }
 
 impl AinoDefaultTargetFunction {
@@ -34,17 +35,20 @@ impl AinoDefaultTargetFunction {
                 use_charged_attack,
                 use_skill,
                 use_burst,
+                moonsign_level,
             } => Self {
                 recharge_demand,
                 use_charged_attack,
                 use_skill,
                 use_burst,
+                moonsign_level,
             },
             _ => Self {
                 recharge_demand: 1.0,
                 use_charged_attack: 0.2,
                 use_skill: 0.4,
                 use_burst: 0.4,
+                moonsign_level: 2,
             }
         }
     }
@@ -100,6 +104,14 @@ impl TargetFunctionMetaTrait for AinoDefaultTargetFunction {
                 en: "Burst Usage Ratio"
             ),
             config: ItemConfigType::Float { default: 0.4, min: 0.0, max: 1.0 }
+        },
+        ItemConfig {
+            name: "moonsign_level",
+            title: locale!(
+                zh_cn: "月兆等级",
+                en: "Moonsign Level"
+            ),
+            config: ItemConfigType::Int { min: 1, max: 2, default: 2 },
         },
     ]);
 

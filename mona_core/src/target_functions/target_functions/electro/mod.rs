@@ -11,7 +11,7 @@ pub mod kuki_shinobu_default;
 pub mod cyno_default;
 pub mod clorinde_default;
 pub mod sethos_default;
-mod varesa_default;
+pub mod varesa_default;
 pub mod flins_default;
 pub mod ineffa_default;
 

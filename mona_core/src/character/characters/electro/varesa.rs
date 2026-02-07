@@ -138,7 +138,7 @@ impl CharacterTrait for Varesa {
         atk: [28, 72, 96, 143, 160, 184, 207, 231, 248, 273, 290, 314, 331, 356, 356],
         def: [61, 158, 210, 314, 351, 404, 454, 507, 544, 598, 635, 690, 727, 782, 782],
         sub_stat: CharacterSubStatFamily::CriticalRate192,
-        weapon_type: WeaponType::Catalyst,
+        weapon_type: WeaponType::Claymore,
         star: 5,
         skill_name1: locale!(
             zh_cn: "角力搏摔",
@@ -275,6 +275,7 @@ impl CharacterTrait for Varesa {
     }
 
     fn get_target_function_by_role(role_index: usize, team: &TeamQuantization, c: &CharacterCommonData, w: &WeaponCommonData) -> Box<dyn TargetFunction> {
-        unimplemented!()
+        use crate::target_functions::TargetFunctionConfig;
+        Box::new(crate::target_functions::target_functions::VaresaDefaultTargetFunction)
     }
 }

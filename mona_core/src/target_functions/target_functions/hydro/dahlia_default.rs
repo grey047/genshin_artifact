@@ -1,14 +1,13 @@
-use crate::artifacts::{Artifact, ArtifactSetName};
-use crate::artifacts::effect_config::{ArtifactEffectConfig, ArtifactEffectConfigBuilder, ConfigRate};
+use crate::artifacts::Artifact;
+use crate::artifacts::effect_config::ArtifactEffectConfig;
 use crate::attribute::{Attribute, AttributeName, SimpleAttributeGraph2};
 use crate::character::{Character, CharacterName};
 use crate::character::character_common_data::CharacterCommonData;
-use crate::character::characters::hydro::dahlia::Dahlia;
+use crate::character::characters::hydro::Dahlia;
 use crate::character::skill_config::CharacterSkillConfig;
 use crate::character::traits::CharacterTrait;
-use crate::common::{Element, StatName};
-use crate::common::i18n::locale;
 use crate::common::item_config_type::{ItemConfig, ItemConfigType};
+use crate::common::SkillType;
 use crate::damage::{DamageContext, SimpleDamageBuilder};
 use crate::enemies::Enemy;
 use crate::target_functions::target_function_meta::{TargetFunctionFor, TargetFunctionMeta, TargetFunctionMetaImage};
@@ -25,151 +24,100 @@ pub struct DahliaDefaultTargetFunction {
     pub use_burst: f64,
 }
 
-impl DahliaDefaultTargetFunction {
-    pub fn new(config: &TargetFunctionConfig) -> Self {
-        match *config {
-            TargetFunctionConfig::DahliaDefault {
-                recharge_demand,
-                use_skill,
-                use_burst,
-            } => Self {
-                recharge_demand,
-                use_skill,
-                use_burst,
-            },
-            _ => Self {
-                recharge_demand: 1.0,
-                use_skill: 0.5,
-                use_burst: 0.5,
-            }
-        }
-    }
-}
-
 impl TargetFunctionMetaTrait for DahliaDefaultTargetFunction {
     #[cfg(not(target_family = "wasm"))]
     const META_DATA: TargetFunctionMeta = TargetFunctionMeta {
         name: TargetFunctionName::DahliaDefault,
         name_locale: crate::common::i18n::locale!(
-            zh_cn: "Dahlia-默认",
+            zh_cn: "达利亚-默认",
             en: "Dahlia-Default"
         ),
         description: crate::common::i18n::locale!(
-            zh_cn: "水系输出角色",
-            en: "Hydro DPS character"
+            zh_cn: "达利亚-燃烧辅助/副C",
+            en: "Dahlia - Burn Support/Sub-DPS"
         ),
-        tags: "输出",
+        tags: "输出,辅助",
         four: TargetFunctionFor::SomeWho(CharacterName::Dahlia),
-        image: TargetFunctionMetaImage::Avatar
+        image: TargetFunctionMetaImage::Avatar,
     };
 
     #[cfg(not(target_family = "wasm"))]
     const CONFIG: Option<&'static [ItemConfig]> = Some(&[
         ItemConfig {
             name: "recharge_demand",
-            title: locale!(
+            title: crate::common::i18n::locale!(
                 zh_cn: "充能需求",
-                en: "Recharge Requirement"
+                en: "Recharge Requirement",
             ),
-            config: ItemConfigType::Float { default: 1.0, min: 1.0, max: 3.0 }
+            config: ItemConfigType::Float { min: 1.0, max: 3.0, default: 1.0 }
         },
         ItemConfig {
             name: "use_skill",
-            title: locale!(
-                zh_cn: "E技能使用比例",
-                en: "Skill Usage Ratio"
+            title: crate::common::i18n::locale!(
+                zh_cn: "技能伤害权重",
+                en: "Skill Damage Weight",
             ),
-            config: ItemConfigType::Float { default: 0.5, min: 0.0, max: 1.0 }
+            config: ItemConfigType::Float { min: 0.0, max: 1.0, default: 0.4 }
         },
         ItemConfig {
             name: "use_burst",
-            title: locale!(
-                zh_cn: "大招使用比例",
-                en: "Burst Usage Ratio"
+            title: crate::common::i18n::locale!(
+                zh_cn: "爆发伤害权重",
+                en: "Burst Damage Weight",
             ),
-            config: ItemConfigType::Float { default: 0.5, min: 0.0, max: 1.0 }
+            config: ItemConfigType::Float { min: 0.0, max: 1.0, default: 0.6 }
         },
     ]);
 
     fn create(_character: &CharacterCommonData, _weapon: &WeaponCommonData, config: &TargetFunctionConfig) -> Box<dyn TargetFunction> {
-        Box::new(DahliaDefaultTargetFunction::new(config))
+        let (recharge_demand, use_skill, use_burst) = match *config {
+            TargetFunctionConfig::DahliaDefault { recharge_demand, use_skill, use_burst } => (recharge_demand, use_skill, use_burst),
+            _ => (1.0, 0.4, 0.6)
+        };
+        Box::new(DahliaDefaultTargetFunction {
+            recharge_demand,
+            use_skill,
+            use_burst,
+        })
     }
 }
 
 impl TargetFunction for DahliaDefaultTargetFunction {
     fn get_target_function_opt_config(&self) -> TargetFunctionOptConfig {
-        TargetFunctionOptConfig {
-            atk_fixed: 0.1,
-            atk_percentage: 1.0,
-            hp_fixed: 0.0,
-            hp_percentage: 0.0,
-            def_fixed: 0.0,
-            def_percentage: 0.0,
-            recharge: 0.3,
-            elemental_mastery: 0.0,
-            critical: 1.0,
-            critical_damage: 1.0,
-            healing_bonus: 0.0,
-            bonus_hydro: 1.0,
-            bonus_pyro: 0.0,
-            bonus_cryo: 0.0,
-            bonus_anemo: 0.0,
-            bonus_geo: 0.0,
-            bonus_dendro: 0.0,
-            bonus_physical: 0.0,
-            bonus_electro: 0.0,
-            sand_main_stats: vec![
-                StatName::ATKPercentage,
-                StatName::Recharge,
-            ],
-            goblet_main_stats: vec![
-                StatName::HydroBonus,
-                StatName::ATKPercentage,
-            ],
-            head_main_stats: vec![
-                StatName::CriticalRate,
-                StatName::CriticalDamage,
-                StatName::ATKPercentage,
-            ],
-            set_names: Some(vec![
-                ArtifactSetName::HeartOfDepth,
-                ArtifactSetName::EmblemOfSeveredFate,
-                ArtifactSetName::GladiatorsFinale,
-                ArtifactSetName::ShimenawasReminiscence,
-            ]),
-            very_critical_set_names: None,
-            normal_threshold: TargetFunctionOptConfig::DEFAULT_NORMAL_THRESHOLD,
-            critical_threshold: TargetFunctionOptConfig::DEFAULT_CRITICAL_THRESHOLD,
-            very_critical_threshold: TargetFunctionOptConfig::DEFAULT_VERY_CRITICAL_THRESHOLD
-        }
+        unimplemented!()
     }
 
     fn get_default_artifact_config(&self, _team_config: &TeamQuantization) -> ArtifactEffectConfig {
+        // BiS Artifacts for Dahlia (Burn Support/Sub-DPS):
+        // - SilkenMoonsSerenade
+        // - AubadeOfMorningstarAndMoon
+        // - CrimsonWitchOfFlames
         Default::default()
     }
 
-    fn target(&self, attribute: &SimpleAttributeGraph2, character: &Character<SimpleAttributeGraph2>, _weapon: &Weapon<SimpleAttributeGraph2>, _artifacts: &[&Artifact], _enemy: &Enemy) -> f64 {
+    fn target(&self, attribute: &SimpleAttributeGraph2, character: &Character<SimpleAttributeGraph2>, _weapon: &Weapon<SimpleAttributeGraph2>, _artifacts: &[&Artifact], enemy: &Enemy) -> f64 {
         let context: DamageContext<'_, SimpleAttributeGraph2> = DamageContext {
             character_common_data: &character.common_data,
             attribute,
-            enemy: _enemy,
+            enemy
         };
 
-        let s_config = CharacterSkillConfig::NoConfig;
-
+        let config = CharacterSkillConfig::Dahlia { is_burning: true };
         type S = <Dahlia as CharacterTrait>::DamageEnumType;
 
-        let dmg_normal = Dahlia::damage::<SimpleDamageBuilder>(&context, S::Normal1, &s_config, None).normal.expectation;
-        let dmg_skill = Dahlia::damage::<SimpleDamageBuilder>(&context, S::E1, &s_config, None).normal.expectation;
-        let dmg_burst = Dahlia::damage::<SimpleDamageBuilder>(&context, S::Q1, &s_config, None).normal.expectation;
+        // Skill damage (Scarlet Sanctuary + Crimson Blossom)
+        let skill_dmg = Dahlia::damage::<SimpleDamageBuilder>(
+            &context, S::ESanctuary, &config, None
+        ).normal.expectation;
+
+        // Burst damage (Crimson Exequy)
+        let burst_dmg = Dahlia::damage::<SimpleDamageBuilder>(
+            &context, S::QExequy, &config, None
+        ).normal.expectation;
 
         let recharge = attribute.get_value(AttributeName::Recharge);
-        let r = recharge.min(self.recharge_demand);
+        let recharge_ratio = recharge.min(self.recharge_demand);
 
-        let total_dmg = (dmg_normal * (1.0 - self.use_skill * 0.5) 
-                       + dmg_skill * self.use_skill 
-                       + dmg_burst * self.use_burst) * r;
-
-        total_dmg
+        recharge_ratio * (skill_dmg * self.use_skill + burst_dmg * self.use_burst)
     }
 }

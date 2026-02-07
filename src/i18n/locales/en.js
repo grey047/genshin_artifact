@@ -331,5 +331,16 @@ export default {
         Artifact: "Artifact BUFF",
         Resonance: "Resonance",
         Common: "Custom",
+    },
+    moonsign: {
+        title: "Moonsign Level",
+        nascent: "Nascent (Lv1)",
+        ascendant: "Ascendant (Lv2)",
+    },
+    hexenzirkel: {
+        title: "Hexenzirkel",
+        member: "Hexenzirkel Member",
+        tooltip: "Requires completing 'Witch's Homework' quest",
+        count: "Hexenzirkel Members Count",
     }
 }

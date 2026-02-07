@@ -90,12 +90,37 @@
                 >{{ option }}</el-radio-button>
             </el-radio-group>
         </template>
+        <template v-if="type === 'moonsign'">
+            <el-select
+                :modelValue="modelValue"
+                @update:modelValue="handleChangeValue"
+            >
+                <el-option
+                    :label="t('moonsign.nascent')"
+                    :value="1"
+                ></el-option>
+                <el-option
+                    :label="t('moonsign.ascendant')"
+                    :value="2"
+                ></el-option>
+            </el-select>
+        </template>
+        <template v-if="type === 'hexenzirkel'">
+            <el-checkbox
+                :modelValue="modelValue"
+                @update:modelValue="handleChangeValue"
+            >{{ t('hexenzirkel.member') }}</el-checkbox>
+            <el-tooltip :content="t('hexenzirkel.tooltip')">
+                <i class="el-icon-info" style="margin-left: 8px;"></i>
+            </el-tooltip>
+        </template>
     </div>
 </template>
 
 <script>
 import SelectElementType from "@c/select/SelectElementType"
 import SelectSkillType from "@c/select/SelectSkillType"
+import { useI18n } from "@/i18n/i18n"
 
 export default {
     name: "ConfigItem",
@@ -107,6 +132,10 @@ export default {
         title: {},
     },
     emits: ["update:modelValue"],
+    setup() {
+        const { t } = useI18n()
+        return { t }
+    },
     methods: {
         handleInputValue(value) {
             let v = 0
@@ -118,7 +147,7 @@ export default {
                     v = 0
                 }
             }
-            
+
             this.handleChangeValue(v)
         },
 

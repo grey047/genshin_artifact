@@ -11,6 +11,7 @@ use crate::common::item_config_type::{ItemConfig, ItemConfigType};
 use crate::damage::damage_builder::DamageBuilder;
 use crate::damage::DamageContext;
 use crate::target_functions::TargetFunction;
+use crate::target_functions::target_functions::anemo::JahodaDefaultTargetFunction;
 use crate::team::TeamQuantization;
 use crate::weapon::weapon_common_data::WeaponCommonData;
 
@@ -23,6 +24,7 @@ pub struct JahodaSkillType {
     pub normal_dmg3: [f64; 15],
     pub normal_dmg4: [f64; 15],
     pub charged_dmg1: [f64; 15],
+    pub charged_dmg2: [f64; 15],
     pub plunging_dmg1: [f64; 15],
     pub plunging_dmg2: [f64; 15],
     pub plunging_dmg3: [f64; 15],
@@ -31,16 +33,17 @@ pub struct JahodaSkillType {
 }
 
 pub const JAHODA_SKILL: JahodaSkillType = JahodaSkillType {
-    normal_dmg1: [18.70, 48.64, 48.04, 124.96, 62.01, 161.30, 92.88, 241.60, 15.00, 102.80, 267.42, 118.25, 307.60, 20.00, 0.0],
-    normal_dmg2: [161.30, 92.88, 241.60, 15.00, 102.80, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    normal_dmg3: [267.42, 118.25, 307.60, 20.00, 131.48, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    normal_dmg4: [342.02, 146.93, 382.20, 30.00, 18.00, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    charged_dmg1: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    normal_dmg1: [0.3740, 0.4038, 0.4336, 0.4769, 0.5067, 0.5365, 0.5798, 0.6231, 0.6664, 0.7097, 0.7530, 0.7963, 0.8396, 0.8829, 0.9262],
+    normal_dmg2: [0.3724, 0.4020, 0.4316, 0.4748, 0.5044, 0.5340, 0.5772, 0.6204, 0.6636, 0.7068, 0.7500, 0.7932, 0.8364, 0.8796, 0.9228],
+    normal_dmg3: [0.4939, 0.5333, 0.5727, 0.6300, 0.6694, 0.7088, 0.7661, 0.8234, 0.8807, 0.9380, 0.9953, 1.0526, 1.1099, 1.1672, 1.2245],
+    normal_dmg4: [0.0; 15],
+    charged_dmg1: [0.4400, 0.4752, 0.5104, 0.5614, 0.5966, 0.6318, 0.6828, 0.7338, 0.7848, 0.8466, 0.9084, 0.9702, 1.0320, 1.0938, 1.1556],
+    charged_dmg2: [1.2400, 1.3392, 1.4384, 1.5822, 1.6814, 1.7806, 1.9244, 2.0682, 2.2120, 2.3874, 2.5628, 2.7382, 2.9136, 3.0890, 3.2644],
     plunging_dmg1: [0.5683; 15],
     plunging_dmg2: [1.1363; 15],
     plunging_dmg3: [1.4193; 15],
-    e_dmg1: [150.00, 160.00, 170.00, 180.00, 190.00, 200.00, 210.00, 220.00, 230.00, 240.00, 250.00, 260.00, 270.00, 280.00, 0.0],
-    q_dmg1: [200.00, 215.00, 230.00, 245.00, 260.00, 275.00, 290.00, 305.00, 320.00, 335.00, 350.00, 365.00, 380.00, 395.00, 0.0],
+    e_dmg1: [1.1520, 1.2442, 1.3364, 1.4699, 1.5621, 1.6543, 1.7878, 1.9213, 2.0548, 2.2296, 2.4044, 2.5792, 2.7540, 2.9288, 3.1036],
+    q_dmg1: [1.7280, 1.8662, 2.0044, 2.2049, 2.3431, 2.4813, 2.6818, 2.8823, 3.0828, 3.3444, 3.6060, 3.8676, 4.1292, 4.3908, 4.6524],
 };
 
 damage_enum!(
@@ -49,7 +52,8 @@ damage_enum!(
     Normal2
     Normal3
     Normal4
-    Charged
+    Charged1
+    Charged2
     Plunging1
     Plunging2
     Plunging3
@@ -62,7 +66,7 @@ impl JahodaDamageEnum {
         use JahodaDamageEnum::*;
         match *self {
             Normal1 | Normal2 | Normal3 | Normal4 => SkillType::NormalAttack,
-            Charged => SkillType::ChargedAttack,
+            Charged1 | Charged2 => SkillType::ChargedAttack,
             Plunging1 => SkillType::PlungingAttackInAction,
             Plunging2 | Plunging3 => SkillType::PlungingAttackOnGround,
             E1 => SkillType::ElementalSkill,
@@ -90,10 +94,10 @@ impl CharacterTrait for Jahoda {
             en: "Jahoda",
         ),
         element: Element::Anemo,
-        hp: [771, 2218, 2218, 4340, 4340, 4340, 4340, 5498, 5498, 5498, 5498, 6655, 6655, 6655, 7716],
-        atk: [17, 51, 51, 100, 100, 100, 100, 127, 127, 127, 127, 153, 153, 153, 178],
-        def: [46, 133, 133, 261, 261, 261, 261, 330, 330, 330, 330, 400, 400, 400, 464],
-        sub_stat: CharacterSubStatFamily::ATK288,
+        hp: [10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264, 10264],
+        atk: [572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572],
+        def: [576, 576, 576, 576, 576, 576, 576, 576, 576, 576, 576, 576, 576, 576, 576],
+        sub_stat: CharacterSubStatFamily::CriticalRate192,
         weapon_type: WeaponType::Bow,
         star: 5,
         skill_name1: locale!(
@@ -122,7 +126,8 @@ impl CharacterTrait for Jahoda {
             Normal2 hit_n_dmg!(2)
             Normal3 hit_n_dmg!(3)
             Normal4 hit_n_dmg!(4)
-            Charged charged_dmg!()
+            Charged1 charged_dmg!()
+            Charged2 locale!(zh_cn: "满蓄力瞄准射击", en: "Fully-Charged Aimed Shot")
             Plunging1 plunging_dmg!(1)
             Plunging2 plunging_dmg!(2)
             Plunging3 plunging_dmg!(3)
@@ -143,7 +148,24 @@ impl CharacterTrait for Jahoda {
     fn damage_internal<D: DamageBuilder>(context: &DamageContext<'_, D::AttributeType>, s: usize, _config: &CharacterSkillConfig, fumo: Option<Element>) -> D::Result {
         let skill: JahodaDamageEnum = num::FromPrimitive::from_usize(s).unwrap();
         let (s1, _s2, _s3) = context.character_common_data.get_3_skill();
-        let builder = D::new();
+        
+        let ratio = match skill {
+            JahodaDamageEnum::Normal1 => JAHODA_SKILL.normal_dmg1[s1],
+            JahodaDamageEnum::Normal2 => JAHODA_SKILL.normal_dmg2[s1],
+            JahodaDamageEnum::Normal3 => JAHODA_SKILL.normal_dmg3[s1],
+            JahodaDamageEnum::Normal4 => JAHODA_SKILL.normal_dmg4[s1],
+            JahodaDamageEnum::Charged1 => JAHODA_SKILL.charged_dmg1[s1],
+            JahodaDamageEnum::Charged2 => JAHODA_SKILL.charged_dmg2[s1],
+            JahodaDamageEnum::Plunging1 => JAHODA_SKILL.plunging_dmg1[s1],
+            JahodaDamageEnum::Plunging2 => JAHODA_SKILL.plunging_dmg2[s1],
+            JahodaDamageEnum::Plunging3 => JAHODA_SKILL.plunging_dmg3[s1],
+            JahodaDamageEnum::E1 => JAHODA_SKILL.e_dmg1[s1],
+            JahodaDamageEnum::Q1 => JAHODA_SKILL.q_dmg1[s1],
+        };
+        
+        let mut builder = D::new();
+        builder.add_atk_ratio("Skill Ratio", ratio);
+        
         builder.damage(
             &context.attribute,
             &context.enemy,
@@ -159,6 +181,10 @@ impl CharacterTrait for Jahoda {
     }
 
     fn get_target_function_by_role(_role_index: usize, _team: &TeamQuantization, _c: &CharacterCommonData, _w: &WeaponCommonData) -> Box<dyn TargetFunction> {
-        unimplemented!()
+        Box::new(JahodaDefaultTargetFunction::new(&crate::target_functions::TargetFunctionConfig::JahodaDefault {
+            recharge_demand: 1.0,
+            use_skill: 0.5,
+            use_burst: 0.5,
+        }))
     }
 }

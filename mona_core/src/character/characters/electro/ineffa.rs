@@ -140,6 +140,18 @@ impl CharacterTrait for Ineffa {
     #[cfg(not(target_family = "wasm"))]
     const CONFIG_DATA: Option<&'static [ItemConfig]> = None;
 
+    #[cfg(not(target_family = "wasm"))]
+    const CONFIG_SKILL: Option<&'static [ItemConfig]> = Some(&[
+        ItemConfig {
+            name: "moonsign_level",
+            title: locale!(
+                zh_cn: "月兆等级",
+                en: "Moonsign Level"
+            ),
+            config: ItemConfigType::Int { min: 1, max: 2, default: 2 },
+        },
+    ]);
+
     fn damage_internal<D: DamageBuilder>(context: &DamageContext<'_, D::AttributeType>, s: usize, _config: &CharacterSkillConfig, fumo: Option<Element>) -> D::Result {
         let skill: IneffaDamageEnum = num::FromPrimitive::from_usize(s).unwrap();
         let (s1, _s2, _s3) = context.character_common_data.get_3_skill();
@@ -164,6 +176,7 @@ impl CharacterTrait for Ineffa {
             recharge_demand: 1.0,
             use_skill: 0.5,
             use_burst: 0.5,
+            moonsign_level: 2,
         }))
     }
 }

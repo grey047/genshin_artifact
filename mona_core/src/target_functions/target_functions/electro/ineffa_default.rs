@@ -23,6 +23,7 @@ pub struct IneffaDefaultTargetFunction {
     pub recharge_demand: f64,
     pub use_skill: f64,
     pub use_burst: f64,
+    pub moonsign_level: usize,
 }
 
 impl IneffaDefaultTargetFunction {
@@ -32,15 +33,18 @@ impl IneffaDefaultTargetFunction {
                 recharge_demand,
                 use_skill,
                 use_burst,
+                moonsign_level,
             } => Self {
                 recharge_demand,
                 use_skill,
                 use_burst,
+                moonsign_level,
             },
             _ => Self {
                 recharge_demand: 1.0,
                 use_skill: 0.5,
                 use_burst: 0.5,
+                moonsign_level: 2,
             }
         }
     }
@@ -88,6 +92,14 @@ impl TargetFunctionMetaTrait for IneffaDefaultTargetFunction {
                 en: "Burst Usage Ratio"
             ),
             config: ItemConfigType::Float { default: 0.5, min: 0.0, max: 1.0 }
+        },
+        ItemConfig {
+            name: "moonsign_level",
+            title: locale!(
+                zh_cn: "月兆等级",
+                en: "Moonsign Level"
+            ),
+            config: ItemConfigType::Int { min: 1, max: 2, default: 2 },
         },
     ]);
 

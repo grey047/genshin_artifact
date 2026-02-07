@@ -333,5 +333,16 @@ export default {
         Artifact: "圣遗物引发的BUFF",
         Resonance: "元素共鸣",
         Common: "自定义",
+    },
+    moonsign: {
+        title: "月兆等级",
+        nascent: "初辉 (Lv1)",
+        ascendant: "满辉 (Lv2)",
+    },
+    hexenzirkel: {
+        title: "魔女会",
+        member: "魔女会成员",
+        tooltip: "需要完成「魔女作业」任务",
+        count: "魔女会成员数量",
     }
 }

@@ -52,5 +52,11 @@ pub enum CharacterConfig {
     Flins { in_manifest_flame: bool, moonsign_level: usize },
     Escoffier { res_shred_active: bool },
     Durin { transmutation_state: usize },
+    Dahlia { is_burning: bool },
+    Ineffa { moonsign_level: usize },
+    Columbina { moonsign_level: usize, has_moonsign_benediction: bool },
+    Lauma { moonsign_level: usize },
+    Nefer { moonsign_level: usize },
+    Aino { moonsign_level: usize, has_moonsign_benediction: bool },
     NoConfig,
 }
