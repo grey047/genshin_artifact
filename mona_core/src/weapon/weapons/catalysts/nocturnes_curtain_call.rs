@@ -38,7 +38,7 @@ pub struct NocturnesCurtainCall;
 impl WeaponTrait for NocturnesCurtainCall {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::NocturnesCurtainCall,
-        internal_name: "Catalyst_NocturneCurtainCall",
+        internal_name: "Catalyst_Brisingamen",
         weapon_type: WeaponType::Catalyst,
         weapon_sub_stat: Some(WeaponSubStatFamily::CriticalRate68),
         weapon_base: WeaponBaseATKFamily::ATK608,

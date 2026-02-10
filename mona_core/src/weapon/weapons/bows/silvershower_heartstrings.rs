@@ -41,7 +41,7 @@ pub struct SilvershowerHeartstrings;
 impl WeaponTrait for SilvershowerHeartstrings {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::SilvershowerHeartstrings,
-        internal_name: "SilvershowerHeartstrings",
+        internal_name: "Bow_Arcdange",
         weapon_type: WeaponType::Bow,
         weapon_sub_stat: Some(WeaponSubStatFamily::HP144),
         weapon_base: WeaponBaseATKFamily::ATK542,

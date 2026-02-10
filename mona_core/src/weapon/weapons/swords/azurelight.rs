@@ -32,7 +32,7 @@ impl<A: Attribute> WeaponEffect<A> for AzurelightEffect {
         // 能量为0时: 暴击伤害加成 40% + 精炼 * 10%
         if self.energy_zero {
             let cd_bonus = 0.40 + refine * 0.10;
-            attribute.set_value_by(AttributeName::CriticalDamage, "白山的馈赐", cd_bonus);
+            attribute.set_value_by(AttributeName::CriticalDamageBase, "白山的馈赐", cd_bonus);
         }
     }
 }
@@ -42,9 +42,9 @@ pub struct Azurelight;
 impl WeaponTrait for Azurelight {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::Azurelight,
-        internal_name: "azurelight",
+        internal_name: "Sword_Regalis",
         weapon_type: WeaponType::Sword,
-        weapon_sub_stat: Some(WeaponSubStatFamily::CRITRate8),
+        weapon_sub_stat: Some(WeaponSubStatFamily::CriticalRate96),
         weapon_base: WeaponBaseATKFamily::ATK608,
         star: 5,
         #[cfg(not(target_family = "wasm"))]

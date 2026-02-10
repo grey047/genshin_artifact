@@ -13,7 +13,7 @@ pub struct DialoguesOfTheDesertSages;
 impl WeaponTrait for DialoguesOfTheDesertSages {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::DialoguesOfTheDesertSages,
-        internal_name: "",
+        internal_name: "Pole_Caduceus",
         weapon_type: WeaponType::Polearm,
         weapon_sub_stat: Some(WeaponSubStatFamily::HP90),
         weapon_base: WeaponBaseATKFamily::ATK510,

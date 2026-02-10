@@ -27,7 +27,7 @@ pub struct Cloudforged;
 impl WeaponTrait for Cloudforged {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::Cloudforged,
-        internal_name: "Cloudforged",
+        internal_name: "Bow_Ultimatum",
         weapon_type: WeaponType::Bow,
         weapon_sub_stat: Some(WeaponSubStatFamily::EM36),
         weapon_base: WeaponBaseATKFamily::ATK510,

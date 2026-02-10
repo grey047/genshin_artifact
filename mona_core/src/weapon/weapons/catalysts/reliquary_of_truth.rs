@@ -43,7 +43,7 @@ pub struct ReliquaryOfTruth;
 impl WeaponTrait for ReliquaryOfTruth {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::ReliquaryOfTruth,
-        internal_name: "Catalyst_TruthReliquary",
+        internal_name: "Catalyst_Sistrum",
         weapon_type: WeaponType::Catalyst,
         weapon_sub_stat: Some(WeaponSubStatFamily::CriticalDamage192),
         weapon_base: WeaponBaseATKFamily::ATK542,

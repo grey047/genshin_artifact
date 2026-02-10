@@ -28,7 +28,7 @@ pub struct Absolution;
 impl WeaponTrait for Absolution {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::Absolution,
-        internal_name: "Absolution",
+        internal_name: "Sword_Estoc",
         weapon_type: WeaponType::Sword,
         weapon_sub_stat: Some(WeaponSubStatFamily::CriticalDamage96),
         weapon_base: WeaponBaseATKFamily::ATK674,

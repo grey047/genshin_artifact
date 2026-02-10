@@ -33,7 +33,7 @@ pub struct UrakuMisugiri;
 impl WeaponTrait for UrakuMisugiri {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::UrakuMisugiri,
-        internal_name: "IDontKnow",
+        internal_name: "Sword_Needle",
         weapon_type: WeaponType::Sword,
         weapon_sub_stat: Some(WeaponSubStatFamily::CriticalDamage192),
         weapon_base: WeaponBaseATKFamily::ATK542,

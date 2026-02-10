@@ -29,7 +29,7 @@ pub struct CrimsonMoonsSemblance;
 impl WeaponTrait for CrimsonMoonsSemblance {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::CrimsonMoonsSemblance,
-        internal_name: "",
+        internal_name: "Pole_BloodMoon",
         weapon_type: WeaponType::Polearm,
         weapon_sub_stat: Some(WeaponSubStatFamily::CriticalRate48),
         weapon_base: WeaponBaseATKFamily::ATK674,
