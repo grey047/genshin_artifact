@@ -36,7 +36,7 @@ ALL characters use CDN URLs. The following new characters fail because CDN doesn
 | Columbina | `Columbina_avatar.webp` EXISTS | CDN FAIL |
 | Dahlia | `Dahlia_avatar.webp` EXISTS | CDN FAIL |
 | Durin | `Durin_avatar.webp` EXISTS | CDN FAIL |
-| **Escoffier** | **MISSING** (no avatar file) | CDN FAIL |
+| **Escoffier** | `Escoffier_avatar.webp` EXISTS | CDN FAIL |
 | Flins | `Flins_avatar.webp` EXISTS | CDN FAIL |
 | Ifa | `Ifa_avatar.webp` EXISTS | CDN FAIL |
 | Ineffa | `Ineffa_avatar.webp` EXISTS | CDN FAIL |
@@ -115,9 +115,9 @@ This avoids re-running gen_meta but is fragile (gets overwritten on next gen_met
 
 Characters with CORRECT Chinese names (no action needed):
 - Aino: 爱诺
-- Dahlia: 达利亚
+- Dahlia: 塔利雅
 - Durin: 杜林
-- Escoffier: 埃斯科菲耶
+- Escoffier: 爱可菲
 - Flins: 菲林斯
 - Skirk: 丝柯克
 
@@ -133,60 +133,110 @@ Characters with CORRECT Chinese names (no action needed):
 
 ### Root Cause
 
-New weapons have no entries in `mona_generate/src/utils/icon_hashmap.rs`, so they fall back to the legacy CDN URL (`upload-bbs.mihoyo.com`) which may not serve their icons.
+The weapon meta template (`mona_generate/templates/weapon_meta_template.js`) has local image imports **commented out** (lines 2-4):
+```javascript
+// {% for weapon in weapons %}
+// import {{ weapon.name }}_tn from "@image/weapons/{{ weapon.name }}_tn"
+// {% endfor %}
+```
+
+All 207 weapons use CDN URLs instead of local images:
+- 170 weapons use old CDN (`upload-bbs.mihoyo.com`) with internal_name
+- 37 weapons use new CDN (`act-webstatic.mihoyo.com`) with MD5 hash
+
+Local images exist at `src/images/weapons/` (135+ files) but are completely unused.
+
+New weapons without CDN coverage fail to display icons.
 
 ### Affected Weapons
 
-| Weapon | In Enum | Exported | In gen_weapon.js | Hash in icon_hashmap |
-|--------|---------|----------|------------------|---------------------|
-| Peakbreaker | YES (polearm, line 141) | YES | **NO** (needs gen_meta) | NO |
-| FangOfTheMountainKing | YES (claymore) | YES | YES (old CDN) | NO |
-| FruitfulHook | YES (claymore) | YES | YES (old CDN) | NO |
-| AThousandBlazingSuns | YES (claymore) | YES | YES (old CDN) | NO |
+| Weapon | In Enum | Exported | In gen_weapon.js | Local Image |
+|--------|---------|----------|------------------|-------------|
+| Peakbreaker | YES (polearm) | YES | **NO** (needs gen_meta) | Need to verify |
+| FangOfTheMountainKing | YES (claymore) | YES | YES (old CDN fails) | Need to verify |
+| FruitfulHook | YES (claymore) | YES | YES (old CDN fails) | Need to verify |
+| AThousandBlazingSuns | YES (claymore) | YES | YES (old CDN fails) | Need to verify |
 
 ### Can We Get Hashes from Honey Hunter World?
 
-**No.** Honey Hunter World (`gensh.honeyhunterworld.com`) uses its own image hosting with numeric IDs (e.g., `/img/i_n11101.webp`), not miHoYo CDN hashes. The two systems are unrelated:
+**No.** Honey Hunter World uses its own image hosting with numeric IDs (e.g., `/img/i_n11101.webp`), completely unrelated to the miHoYo CDN MD5 hashes this project uses.
 
-| Source | URL Format | Example |
-|--------|-----------|---------|
-| Honey Hunter | `/img/i_n{id}.webp` | `gensh.honeyhunterworld.com/img/i_n11101.webp` |
-| This Project | `{md5_hash}.png` on miHoYo CDN | `act-webstatic.mihoyo.com/.../f5336c01b0f1e19833a0f9e8bd04c107.png` |
+### Fix Plan — Hybrid Approach (CDN + Local Fallback)
 
-### Fix Plan (Option A - Use Local Images)
+We have ~207 weapons but only ~135 local images, so a full switch to local is not possible without first filling the gaps. Instead, use a **hybrid** approach: keep working CDN URLs, replace only broken ones with local images.
 
-Similar to the character avatar fix, switch the weapon template to use local images:
+#### Step 1: Write a diagnostic script to identify broken CDN links
+
+Create `script/check_weapon_icons.js`:
+```javascript
+// Parse _gen_weapon.js to extract all weapon CDN URLs
+// HTTP HEAD request each URL to check if it returns 200
+// Cross-reference with local images in src/images/weapons/
+// Output report:
+//   - WORKING: CDN URL returns 200 → keep as-is
+//   - BROKEN + LOCAL: CDN fails but local image exists → replace with local
+//   - BROKEN + MISSING: CDN fails and no local image → need to download from HHW
+```
+
+Can be run by an agent with browser capabilities to automate the full check.
+
+#### Step 2: Modify template to support hybrid mode
 
 File: `mona_generate/templates/weapon_meta_template.js`
 
-Uncomment weapon image imports (line 3):
+Add local imports only for weapons that need them:
 ```javascript
+{% for weapon in weapons %}
+{% if weapon.use_local_image -%}
 import {{ weapon.name }}_tn from "@image/weapons/{{ weapon.name }}_tn"
+{%- endif %}
+{% endfor %}
 ```
 
-Replace CDN URL with local reference (lines 18-22):
+Use local or CDN based on a flag:
 ```javascript
+{% if weapon.use_local_image -%}
 url: {{ weapon.name }}_tn,
+{% elif weapon.icon_hash != "" -%}
+url: newImageUrl("{{ weapon.icon_hash }}"),
+{% else -%}
+url: imageUrl("{{ weapon.internal_name }}"),
+{%- endif %}
 ```
 
-Then add any missing weapon thumbnail images to `src/images/weapons/`.
+This requires adding a `use_local_image: bool` field to the weapon meta generation in `mona_generate/src/gen_meta/gen_weapon_meta.rs`, determined by checking whether the weapon's CDN URL is known to be broken or whether a local image file exists.
 
-### Fix Plan (Option B - Add Hash Values)
+#### Step 3: Download missing weapon images from HHW
 
-Find hashes from miHoYo's API (HoYoLab calculator API or game data) and add entries to `mona_generate/src/utils/icon_hashmap.rs`:
+For weapons flagged as BROKEN + MISSING, download from Honey Hunter World (the original source for local weapon images):
 
-```rust
-("Peakbreaker", "xxx..."),
-("FangOfTheMountainKing", "xxx..."),
-("FruitfulHook", "xxx..."),
-("AThousandBlazingSuns", "xxx..."),
+```
+https://gensh.honeyhunterworld.com/img/i_n{weapon_id}.webp
 ```
 
-Then run `npm run gen_meta`.
+HHW weapon ID format: `{type}{serial}` where type = 1(sword), 2(claymore), 3(polearm), 4(catalyst), 5(bow).
+Save as `src/images/weapons/{WeaponName}_tn.webp`.
 
-### Fix Plan (Option C - Peakbreaker Quick Fix)
+**Automation**: Use an agent with browser capabilities to:
+1. Run the diagnostic script to get the BROKEN + MISSING list
+2. For each missing weapon, search HHW to find the weapon page and its `i_n{id}` identifier
+3. Download the icon from `https://gensh.honeyhunterworld.com/img/i_n{id}.webp`
+4. Save to `src/images/weapons/{WeaponName}_tn.webp`
 
-Peakbreaker is fully registered in Rust but missing from the generated JS. Simply running `npm run gen_meta` will add it to `_gen_weapon.js` (though still with old CDN URL).
+This is the same workflow originally used to populate the existing 135+ weapon images.
+
+#### Step 4: Regenerate
+
+```powershell
+npm run gen_meta
+```
+
+#### Simpler Alternative (if template changes are too complex)
+
+Instead of modifying the Rust generation pipeline, directly patch `src/assets/_gen_weapon.js` after generation:
+1. Run diagnostic script to find broken URLs
+2. For each broken weapon with a local image, manually add its import and swap `url:` to use the local import
+3. Downside: gets overwritten on next `gen_meta` run, but is quick to implement
 
 ---
 
