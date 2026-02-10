@@ -199,6 +199,7 @@
 
 <script setup lang="ts">
 import {importMonaJson} from '@/utils/artifacts'
+import {detectFormat, convertGoodToMona} from '@/utils/goodFormat'
 import {positions} from '@/constants/artifact'
 import {downloadString} from '@/utils/common'
 import {deviceIsPC} from "@/utils/device"
@@ -395,7 +396,25 @@ function handleImportJsonClicked() {
 async function importJson(text: string, deleteUnseen: boolean, backupKumiDir: boolean) {
     try {
         const rawObj = JSON.parse(text)
-        await importMonaJson(rawObj, deleteUnseen, backupKumiDir)
+        const format = detectFormat(rawObj)
+
+        let monaObj: any
+        if (format === "good") {
+            const { result, skipped } = convertGoodToMona(rawObj)
+            monaObj = result
+            if (skipped > 0) {
+                ElMessage({
+                    message: `${skipped} artifact(s) skipped due to invalid data`,
+                    type: "warning"
+                })
+            }
+        } else if (format === "mona") {
+            monaObj = rawObj
+        } else {
+            throw new Error("Unknown format")
+        }
+
+        await importMonaJson(monaObj, deleteUnseen, backupKumiDir)
     } catch (e) {
         ElMessage({
             message: t("artPage.wrongFormat"),
