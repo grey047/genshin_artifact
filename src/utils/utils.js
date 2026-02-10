@@ -18,13 +18,17 @@ export function convertDisplayTagValue(name, value) {
 }
 
 export function getArtifactThumbnailURL(setName) {
-    let artData = artifactsData[setName];
-
-    if (artData["flower"]) {
-        return artData["flower"].url;
+    const data = artifactsData[setName];
+    if (!data) {
+        throw "artifact set not found: " + setName;
     }
-
-    return artData["head"].url;
+    // Return the first available position's image (prefer flower)
+    for (const position of ['flower', 'feather', 'sand', 'cup', 'head']) {
+        if (data[position]) {
+            return data[position].url;
+        }
+    }
+    throw "artifact set has no pieces: " + setName;
 }
 
 export function getArtifactRealValue(name, value) {

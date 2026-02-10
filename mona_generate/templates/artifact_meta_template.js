@@ -1,7 +1,21 @@
-const template = "https://upload-bbs.mihoyo.com/game_record/genshin/equip/#.png"
-const newTemplate = "https://act-webstatic.mihoyo.com/hk4e/e20200928calculate/item_icon_u9b0pg/#.png"
-const getIcon = name => template.replace("#", name)
-const getHash = hash => newTemplate.replace("#", hash)
+// generated file, do not edit
+{% for a in artifacts %}
+{% if a.flower.is_some() -%}
+import {{ a.image_name }}_flower from "@image/artifacts/{{ a.image_name }}_flower"
+{%- endif %}
+{% if a.feather.is_some() -%}
+import {{ a.image_name }}_feather from "@image/artifacts/{{ a.image_name }}_feather"
+{%- endif %}
+{% if a.sand.is_some() -%}
+import {{ a.image_name }}_sand from "@image/artifacts/{{ a.image_name }}_sand"
+{%- endif %}
+{% if a.goblet.is_some() -%}
+import {{ a.image_name }}_goblet from "@image/artifacts/{{ a.image_name }}_goblet"
+{%- endif %}
+{% if a.head.is_some() -%}
+import {{ a.image_name }}_head from "@image/artifacts/{{ a.image_name }}_head"
+{%- endif %}
+{% endfor %}
 
 export default {
     {% for a in artifacts %}
@@ -30,51 +44,31 @@ export default {
         {% if a.flower.is_some() -%}
         flower: {
             text: {{a.flower.unwrap()}},
-            {% if a.flower_hash == "" -%}
-            url: getIcon("{{ a.flower_icon }}")
-            {% else -%}
-            url: getHash("{{ a.flower_hash }}")
-            {%- endif -%}
+            url: {{ a.image_name }}_flower,
         },
         {%- endif %}
         {% if a.feather.is_some() -%}
         feather: {
             text: {{a.feather.unwrap()}},
-            {% if a.feather_hash == "" -%}
-            url: getIcon("{{ a.feather_icon }}")
-            {% else -%}
-            url: getHash("{{ a.feather_hash }}")
-            {%- endif -%}
+            url: {{ a.image_name }}_feather,
         },
         {%- endif %}
         {% if a.sand.is_some() -%}
         sand: {
             text: {{a.sand.unwrap()}},
-            {% if a.sand_hash == "" -%}
-            url: getIcon("{{ a.sand_icon }}")
-            {% else -%}
-            url: getHash("{{ a.sand_hash }}")
-            {%- endif -%}
+            url: {{ a.image_name }}_sand,
         },
         {%- endif %}
         {% if a.goblet.is_some() -%}
         cup: {
             text: {{a.goblet.unwrap()}},
-            {% if a.goblet_hash == "" -%}
-            url: getIcon("{{ a.goblet_icon }}")
-            {% else -%}
-            url: getHash("{{ a.goblet_hash }}")
-            {%- endif -%}
+            url: {{ a.image_name }}_goblet,
         },
         {%- endif %}
         {% if a.head.is_some() -%}
         head: {
             text: {{a.head.unwrap()}},
-            {% if a.head_hash == "" -%}
-            url: getIcon("{{ a.head_icon }}")
-            {% else -%}
-            url: getHash("{{ a.head_hash }}")
-            {%- endif -%}
+            url: {{ a.image_name }}_head,
         },
         {%- endif %}
         config4: [

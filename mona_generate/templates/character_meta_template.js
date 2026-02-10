@@ -1,7 +1,7 @@
 // generated file, do not edit
 {% for c in characters %}
 // import {{ c.name }}_card from "@image/characters/{{ c.name }}_card"
-// import {{ c.name }}_avatar from "@image/characters/{{ c.name }}_avatar"
+import {{ c.name }}_avatar from "@image/characters/{{ c.name }}_avatar"
 import {{ c.name }}_splash from "@image/characters/{{ c.name }}_splash"
 {% endfor %}
 
@@ -20,12 +20,7 @@ export default {
         weapon: "{{ c.weapon }}",
         star: {{ c.star }},
         // card: {{ c.name }}_card,
-        // avatar: {{ c.name }}_avatar,
-        {% if c.icon_hash == "" -%}
-        avatar: getName("{{ c.internal_name }}"),
-        {% else -%}
-        avatar: getHash("{{ c.icon_hash }}"),
-        {%- endif %}
+        avatar: {{ c.name }}_avatar,
         splash: {{ c.name }}_splash,
         skillName1: {{ c.skill1_name_index }},
         skillName2: {{ c.skill2_name_index }},
