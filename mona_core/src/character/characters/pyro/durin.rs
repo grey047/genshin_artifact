@@ -132,8 +132,8 @@ const DURIN_STATIC_DATA: CharacterStaticData = CharacterStaticData {
     weapon_type: WeaponType::Sword,
     star: 5,
     skill_name1: locale!(
-        zh_cn: "普通攻击·辉彩灵刃",
-        en: "Normal Attack: Radiant Wingslash"
+        zh_cn: "辉彩灵刃",
+        en: "Radiant Wingslash",
     ),
     skill_name2: locale!(
         zh_cn: "二元形体·聚合与分裂",

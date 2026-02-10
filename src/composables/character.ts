@@ -143,7 +143,8 @@ export function useCharacterSkill(characterName: Ref<CharacterName>) {
         // change skill index
         characterSkillIndex.value = 0
     }, {
-        flush: "sync"
+        flush: "sync",
+        immediate: true
     })
 
     // watch(() => characterSkillConfig.value, () => {

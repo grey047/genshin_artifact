@@ -88,7 +88,7 @@ impl CharacterTrait for Nefer {
         name: CharacterName::Nefer,
         internal_name: "Nefer",
         name_locale: locale!(
-            zh_cn: "Nefer",
+            zh_cn: "奈芙尔",
             en: "Nefer",
         ),
         element: Element::Dendro,
@@ -99,16 +99,16 @@ impl CharacterTrait for Nefer {
         weapon_type: WeaponType::Catalyst,
         star: 5,
         skill_name1: locale!(
-            zh_cn: "普通攻击",
-            en: "Normal Attack",
+            zh_cn: "打击之蛇",
+            en: "Striking Serpent",
         ),
         skill_name2: locale!(
-            zh_cn: "元素战技",
-            en: "Elemental Skill",
+            zh_cn: "塞内特策略：千夜之舞",
+            en: "Senet Strategy: Dance of a Thousand Nights",
         ),
         skill_name3: locale!(
-            zh_cn: "元素爆发",
-            en: "Elemental Burst",
+            zh_cn: "圣誓：真实之眼幻影",
+            en: "Sacred Vow: True Eye's Phantasm",
         )
     };
     type SkillType = NeferSkillType;

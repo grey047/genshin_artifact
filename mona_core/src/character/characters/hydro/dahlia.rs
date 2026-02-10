@@ -112,16 +112,16 @@ const DAHLIA_STATIC_DATA: CharacterStaticData = CharacterStaticData {
     weapon_type: WeaponType::Polearm,
     star: 5,
     skill_name1: locale!(
-        zh_cn: "普通攻击·绯红之花枪",
-        en: "Normal Attack: Spear of the Scarlet Bloom"
+        zh_cn: "西风剑术·仪式",
+        en: "Favonius Bladework - Ritual",
     ),
     skill_name2: locale!(
-        zh_cn: "绯红 Sanctuary",
-        en: "Scarlet Sanctuary"
+        zh_cn: "沉浸领域",
+        en: "Immersive Ordinance",
     ),
     skill_name3: locale!(
-        zh_cn: "绯红 Exequy",
-        en: "Crimson Exequy"
+        zh_cn: "光启诗篇",
+        en: "Radiant Psalter",
     ),
 };
 

@@ -86,7 +86,7 @@ impl CharacterTrait for Ineffa {
         name: CharacterName::Ineffa,
         internal_name: "Ineffa",
         name_locale: locale!(
-            zh_cn: "Ineffa",
+            zh_cn: "伊涅芙",
             en: "Ineffa",
         ),
         element: Element::Electro,
@@ -97,16 +97,16 @@ impl CharacterTrait for Ineffa {
         weapon_type: WeaponType::Polearm,
         star: 5,
         skill_name1: locale!(
-            zh_cn: "普通攻击",
-            en: "Normal Attack",
+            zh_cn: "旋风除尘器",
+            en: "Cyclonic Duster",
         ),
         skill_name2: locale!(
-            zh_cn: "元素战技",
-            en: "Elemental Skill",
+            zh_cn: "清洁模式：载波频率",
+            en: "Cleaning Mode: Carrier Frequency",
         ),
         skill_name3: locale!(
-            zh_cn: "元素爆发",
-            en: "Elemental Burst",
+            zh_cn: "至高指令：旋风终结者",
+            en: "Supreme Instruction: Cyclonic Exterminator",
         )
     };
     type SkillType = IneffaSkillType;

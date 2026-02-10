@@ -90,7 +90,7 @@ impl CharacterTrait for Ifa {
         name: CharacterName::Ifa,
         internal_name: "Ifa",
         name_locale: locale!(
-            zh_cn: "Ifa",
+            zh_cn: "伊法",
             en: "Ifa",
         ),
         element: Element::Anemo,
@@ -101,16 +101,16 @@ impl CharacterTrait for Ifa {
         weapon_type: WeaponType::Catalyst,
         star: 5,
         skill_name1: locale!(
-            zh_cn: "普通攻击",
-            en: "Normal Attack",
+            zh_cn: "驱风仪式",
+            en: "Rite of Dispelling Winds",
         ),
         skill_name2: locale!(
-            zh_cn: "元素战技",
-            en: "Elemental Skill",
+            zh_cn: "空气疾病预防",
+            en: "Airborne Disease Prevention",
         ),
         skill_name3: locale!(
-            zh_cn: "元素爆发",
-            en: "Elemental Burst",
+            zh_cn: "复合镇静领域",
+            en: "Compound Sedation Field",
         )
     };
     type SkillType = IfaSkillType;

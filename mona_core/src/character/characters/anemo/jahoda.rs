@@ -90,7 +90,7 @@ impl CharacterTrait for Jahoda {
         name: CharacterName::Jahoda,
         internal_name: "Jahoda",
         name_locale: locale!(
-            zh_cn: "Jahoda",
+            zh_cn: "雅珂达",
             en: "Jahoda",
         ),
         element: Element::Anemo,
@@ -101,16 +101,16 @@ impl CharacterTrait for Jahoda {
         weapon_type: WeaponType::Bow,
         star: 5,
         skill_name1: locale!(
-            zh_cn: "普通攻击",
-            en: "Normal Attack",
+            zh_cn: "趁热射箭",
+            en: "Strike While the Arrow's Hot",
         ),
         skill_name2: locale!(
-            zh_cn: "元素战技",
-            en: "Elemental Skill",
+            zh_cn: "明智策略：分配战利品",
+            en: "Savvy Strategy: Splitting the Spoils",
         ),
         skill_name3: locale!(
-            zh_cn: "元素爆发",
-            en: "Elemental Burst",
+            zh_cn: "隐藏王牌：猎人七工具",
+            en: "Hidden Aces: Seven Tools of the Hunter",
         )
     };
     type SkillType = JahodaSkillType;

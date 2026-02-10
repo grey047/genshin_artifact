@@ -150,19 +150,19 @@ impl CharacterTrait for Columbina {
         weapon_type: WeaponType::Catalyst,
         star: 5,
         skill_name1: locale!(
-            zh_cn: "普通攻击·命运之舞",
-            en: "Normal Attack: Dance of Destiny",
+            zh_cn: "TODO",
+            en: "Moondew Cascade",
         ),
         skill_name2: locale!(
-            zh_cn: "重力 Ripley",
-            en: "Gravity Ripple",
+            zh_cn: "TODO",
+            en: "Eternal Tides",
         ),
         skill_name3: locale!(
-            zh_cn: "月之印记",
-            en: "Moonsign",
+            zh_cn: "TODO",
+            en: "Moonlit Melancholy",
         ),
         name_locale: locale!(
-            zh_cn: "Columbina",
+            zh_cn: "哥伦比娅",
             en: "Columbina",
         )
     };

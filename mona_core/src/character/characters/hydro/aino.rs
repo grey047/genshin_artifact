@@ -138,8 +138,8 @@ impl CharacterTrait for Aino {
         weapon_type: WeaponType::Claymore,
         star: 4,
         skill_name1: locale!(
-            zh_cn: "普通攻击·敲打修理法",
-            en: "Normal Attack: Hammering Repair Method",
+            zh_cn: "哐当修理法",
+            en: "Bish-Bash-Bosh Repair",
         ),
         skill_name2: locale!(
             zh_cn: "妙思捕手",

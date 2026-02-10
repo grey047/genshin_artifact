@@ -132,7 +132,7 @@ impl CharacterTrait for Lauma {
         name: CharacterName::Lauma,
         internal_name: "Lauma",
         name_locale: locale!(
-            zh_cn: "Lauma",
+            zh_cn: "菈乌玛",
             en: "Lauma",
         ),
         element: Element::Dendro,
@@ -152,16 +152,16 @@ impl CharacterTrait for Lauma {
         weapon_type: WeaponType::Catalyst,
         star: 5,
         skill_name1: locale!(
-            zh_cn: "普通攻击",
-            en: "Normal Attack",
+            zh_cn: "林纳塔之旅",
+            en: "Peregrination of Linnunrata",
         ),
         skill_name2: locale!(
-            zh_cn: "元素战技",
-            en: "Elemental Skill",
+            zh_cn: "卢诺：卡尔西科的无尽休憩",
+            en: "Runo: Dawnless Rest of Karsikko",
         ),
         skill_name3: locale!(
-            zh_cn: "元素爆发",
-            en: "Elemental Burst",
+            zh_cn: "卢诺：万心成为跳动之月",
+            en: "Runo: All Hearts Become the Beating Moon",
         ),
     };
     type SkillType = LaumaSkillType;

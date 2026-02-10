@@ -68,9 +68,9 @@ impl CharacterTrait for Escoffier {
         sub_stat: CharacterSubStatFamily::ATK288,
         weapon_type: WeaponType::Catalyst,
         star: 5,
-        skill_name1: locale!(zh_cn: "普通攻击", en: "Normal Attack"),
-        skill_name2: locale!(zh_cn: "元素战技", en: "Elemental Skill"),
-        skill_name3: locale!(zh_cn: "元素爆发", en: "Elemental Burst")
+        skill_name1: locale!(zh_cn: "烹饪技艺", en: "Kitchen Skills"),
+        skill_name2: locale!(zh_cn: "低温烹饪", en: "Low-Temperature Cooking"),
+        skill_name3: locale!(zh_cn: "评分切割", en: "Scoring Cuts")
     };
     type SkillType = EscoffierSkillType;
     const SKILL: Self::SkillType = ESCOFFIER_SKILL;
