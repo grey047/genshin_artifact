@@ -96,7 +96,9 @@ impl DSLInterface {
         let unsafe_context = UnsafeDamageContext {
             character_common_data: &character.common_data,
             enemy: &enemy,
-            attribute: &attribute
+            attribute: &attribute,
+            moonsign_level: 0,
+            is_hexenzirkel: false,
         };
         env.add_damage_context(unsafe_context);
         utils::log!("{:?}", env.damage_ctx.keys());

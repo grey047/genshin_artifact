@@ -65,7 +65,7 @@ pub enum TargetFunctionConfig {
     MualaniDefault { vaporize_rate: f64 },
     FlinsDefault { recharge_requirement: f64, manifest_flame: bool, moonsign_level: usize, lunar_charged_rate: f64, normal_attack_rate: f64, burst_rate: f64 },
     EscoffierDefault { recharge_requirement: f64, res_shred_active: bool, skill_damage_weight: f64, burst_damage_weight: f64 },
-    SkirkDefault { recharge_demand: f64, use_seven_phase: bool, use_charged_attack: f64, use_skill: f64, use_burst: f64 },
+    SkirkDefault { recharge_demand: f64, use_seven_phase: bool, use_charged_attack: f64, use_burst: f64 },
     AinoDefault { recharge_demand: f64, use_charged_attack: f64, use_skill: f64, use_burst: f64, moonsign_level: usize },
     ColumbinaDefault { recharge_demand: f64, use_skill: f64, use_burst: f64, use_e2: f64, use_e3_lc: f64, use_e3_lb: f64, use_e3_lcrys: f64, moonsign_level: usize },
     DahliaDefault { recharge_demand: f64, use_skill: f64, use_burst: f64 },

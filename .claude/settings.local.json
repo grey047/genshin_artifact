@@ -15,7 +15,26 @@
       "Bash(chown:*)",
       "Bash(chmod:*)",
       "Bash(git commit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node --version:*)",
+      "Bash(rustup target list:*)",
+      "Bash(findstr:*)",
+      "Bash(test:*)",
+      "Bash(npm run serve:*)",
+      "Bash(npm install:*)",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Bash(ls \"e:\\\\Moltbot\\\\workspace\\\\genshin_artifact\\\\mona_core\\\\src\\\\character\\\\characters\"\" | grep -i \"aino|columbina|dahlia|durin|escoffier|flins|ifa|ineffa|jahoda|lauma|nefer|skirk \")",
+      "WebFetch(domain:gensh.honeyhunterworld.com)",
+      "Bash(for char in \"Aino\" \"Columbina\" \"Dahlia\" \"Durin\" \"Escoffier\" \"Flins\" \"Ifa\" \"Ineffa\" \"Jahoda\" \"Lauma\" \"Nefer\" \"Skirk\")",
+      "Bash(do)",
+      "Bash(then)",
+      "Bash(else)",
+      "Bash(fi)",
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(node -e:*)",
+      "WebFetch(domain:frzyc.github.io)"
     ]
   }
 }

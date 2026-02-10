@@ -23,7 +23,6 @@ pub struct SkirkDefaultTargetFunction {
     pub recharge_demand: f64,
     pub use_seven_phase: bool,
     pub use_charged_attack: f64,  // 重击使用比例
-    pub use_skill: f64,           // E技能使用比例
     pub use_burst: f64,          // 大招使用比例
 }
 
@@ -34,20 +33,17 @@ impl SkirkDefaultTargetFunction {
                 recharge_demand,
                 use_seven_phase,
                 use_charged_attack,
-                use_skill,
                 use_burst,
             } => Self {
                 recharge_demand,
                 use_seven_phase,
                 use_charged_attack,
-                use_skill,
                 use_burst,
             },
             _ => Self {
                 recharge_demand: 1.0,
                 use_seven_phase: true,
                 use_charged_attack: 0.3,
-                use_skill: 0.4,
                 use_burst: 0.3,
             }
         }
@@ -96,14 +92,6 @@ impl TargetFunctionMetaTrait for SkirkDefaultTargetFunction {
                 en: "Charged Attack Ratio"
             ),
             config: ItemConfigType::Float { default: 0.3, min: 0.0, max: 1.0 }
-        },
-        ItemConfig {
-            name: "use_skill",
-            title: locale!(
-                zh_cn: "E技能使用比例",
-                en: "Skill Usage Ratio"
-            ),
-            config: ItemConfigType::Float { default: 0.4, min: 0.0, max: 1.0 }
         },
         ItemConfig {
             name: "use_burst",
@@ -158,7 +146,6 @@ impl TargetFunction for SkirkDefaultTargetFunction {
                 ArtifactSetName::BlizzardStrayer,
                 ArtifactSetName::GladiatorsFinale,
                 ArtifactSetName::ShimenawasReminiscence,
-                ArtifactSetName::EmblemOfSeveredFate,
             ]),
             very_critical_set_names: None,
             normal_threshold: TargetFunctionOptConfig::DEFAULT_NORMAL_THRESHOLD,
@@ -184,10 +171,12 @@ impl TargetFunction for SkirkDefaultTargetFunction {
         // 七相模式配置
         let s_config = CharacterSkillConfig::Skirk {
             in_seven_phase: self.use_seven_phase,
-            death_stacks: 0,
+            death_stacks: 2,
             serpent_points: 50.0,
             c2_active: false,
             void_realm_active: false,
+            has_hydro_cryo_team: false,
+            extinction_hit_count: 5,
         };
 
         type S = <Skirk as CharacterTrait>::DamageEnumType;
@@ -197,17 +186,13 @@ impl TargetFunction for SkirkDefaultTargetFunction {
         
         // 重击伤害
         let dmg_charged = Skirk::damage::<SimpleDamageBuilder>(&context, S::Charged, &s_config, None).normal.expectation;
-        
-        // E技能伤害 (以 E5 为代表)
-        let dmg_skill = Skirk::damage::<SimpleDamageBuilder>(&context, S::E5, &s_config, None).normal.expectation;
 
         // 大招伤害
         let dmg_burst = Skirk::damage::<SimpleDamageBuilder>(&context, S::Q2, &s_config, None).normal.expectation;
 
         // 总伤害 = 各部分伤害 * 使用比例
-        let total_dmg = dmg_normal * (1.0 - self.use_charged_attack - self.use_skill * 0.5)
+        let total_dmg = dmg_normal * (1.0 - self.use_charged_attack - self.use_burst)
                        + dmg_charged * self.use_charged_attack
-                       + dmg_skill * self.use_skill
                        + dmg_burst * self.use_burst;
 
         total_dmg

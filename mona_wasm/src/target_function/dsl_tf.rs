@@ -29,7 +29,9 @@ impl TargetFunction for TargetFunctionDSL {
         let context_unsafe = UnsafeDamageContext {
             character_common_data: &character.common_data,
             enemy: &*enemy,
-            attribute: &*attribute
+            attribute: &*attribute,
+            moonsign_level: 0,
+            is_hexenzirkel: false,
         };
 
         {
