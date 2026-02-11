@@ -55,7 +55,6 @@ pub struct SkirkSkillType {
     pub q_slash: [f64; 15],  // 斩击伤害 (5次)
     pub q_final: [f64; 15],  // 最终段伤害
     pub q_serpent_bonus: [f64; 15],  // 每点 SS 提供的 ATK%
-    pub q_void_bonus: [f64; 15],  // 虚境裂隙加成
     pub q_cd: [f64; 15],
 
     // Passive: Death's Crossing (死河渡断)
@@ -70,8 +69,12 @@ pub struct SkirkSkillType {
     pub c6_sever: [f64; 15], // C6 Sever 协同攻击 (普攻, 180%)
     pub c6_sever_burst: [f64; 15], // C6 Sever 协同攻击 (爆发, 750%)
 
-    // Havoc: Extinction (极恶技·尽) — burst replacement in Seven-Phase mode
-    pub q_extinction_per_hit: [f64; 15],
+    // Havoc: Extinction (极恶技·尽) — 凋尽状态下普攻的额外ATK倍率
+    // 根据虚境裂隙数量 (0-3) 和大招等级变化 (from ProudSkill Group 11439, params 4-7)
+    pub extinction_bonus_0crack: [f64; 15],
+    pub extinction_bonus_1crack: [f64; 15],
+    pub extinction_bonus_2crack: [f64; 15],
+    pub extinction_bonus_3crack: [f64; 15],
 }
 
 pub const SKIRK_SKILL: SkirkSkillType = SkirkSkillType {
@@ -107,7 +110,6 @@ pub const SKIRK_SKILL: SkirkSkillType = SkirkSkillType {
     q_slash: [1.2276, 1.3197, 1.4117, 1.5345, 1.6266, 1.7186, 1.8414, 1.9642, 2.0869, 2.2097, 2.3324, 2.4552, 2.6087, 2.7621, 2.9156],
     q_final: [2.0460, 2.1995, 2.3529, 2.5575, 2.7110, 2.8644, 3.0690, 3.2736, 3.4782, 3.6828, 3.8874, 4.0920, 4.3478, 4.6035, 4.8593],
     q_serpent_bonus: [0.1932, 0.2077, 0.2222, 0.2415, 0.2560, 0.2705, 0.2899, 0.3092, 0.3285, 0.3478, 0.3671, 0.3865, 0.4106, 0.4348, 0.4589],
-    q_void_bonus: [0.035, 0.040, 0.045, 0.050, 0.055, 0.060, 0.065, 0.070, 0.075, 0.080, 0.085, 0.090, 0.095, 0.100, 0.105],
     q_cd: [15.0; 15],
 
     // Passive: Death's Crossing (A4)
@@ -122,9 +124,11 @@ pub const SKIRK_SKILL: SkirkSkillType = SkirkSkillType {
     c6_sever: [1.80; 15],  // Sever 协同攻击 180% (decimal)
     c6_sever_burst: [7.50; 15], // Sever 协同攻击 750% (decimal, GO constellation6[1])
 
-    // Havoc: Extinction (极恶技·尽) — per-hit DMG increase
-    // TODO: verify per-level scaling from game data
-    q_extinction_per_hit: [0.08; 15],
+    // Havoc: Extinction (极恶技·尽) — from ProudSkill Group 11439, params 4-7
+    extinction_bonus_0crack: [0.035, 0.040, 0.045, 0.050, 0.055, 0.060, 0.065, 0.070, 0.075, 0.080, 0.085, 0.090, 0.095, 0.100, 0.105],
+    extinction_bonus_1crack: [0.066, 0.072, 0.078, 0.084, 0.090, 0.096, 0.102, 0.108, 0.114, 0.120, 0.126, 0.132, 0.138, 0.144, 0.150],
+    extinction_bonus_2crack: [0.088, 0.096, 0.104, 0.112, 0.120, 0.128, 0.136, 0.144, 0.152, 0.160, 0.168, 0.176, 0.184, 0.192, 0.200],
+    extinction_bonus_3crack: [0.110, 0.120, 0.130, 0.140, 0.150, 0.160, 0.170, 0.180, 0.190, 0.200, 0.210, 0.220, 0.230, 0.240, 0.250],
 };
 
 // ============================================================================
@@ -147,10 +151,9 @@ pub enum SkirkDamageEnum {
     Plunging2,
     Plunging3,
 
-    // Elemental Burst (极恶技·灭 / 极恶技·尽)
-    Q1,             // 斩击 (5次)
+    // Elemental Burst (极恶技·灭)
+    Q1,             // 斛击 (5次)
     Q2,             // 最终段
-    QExtinction,    // 极恶技·尽 (七相爆发)
     QC1,            // C1 水晶刃
 
     // C6 Sever (协同攻击)
@@ -166,11 +169,11 @@ impl SkirkDamageEnum {
     pub fn get_skill_type(&self) -> SkillType {
         use SkirkDamageEnum::*;
         match *self {
-            Normal1 | Normal2 | Normal3_1 | Normal3_2 | Normal4_1 | Normal4_2 | Normal5 => SkillType::NormalAttack,
+            Normal1 | Normal2 | Normal3_1 | Normal3_2 | Normal4_1 | Normal4_2 | Normal5 | C6Sever => SkillType::NormalAttack,
             Charged | QC1 => SkillType::ChargedAttack,
             Plunging1 => SkillType::PlungingAttackInAction,
             Plunging2 | Plunging3 => SkillType::PlungingAttackOnGround,
-            Q1 | Q2 | QExtinction | C6Sever | C6SeverBurst => SkillType::ElementalBurst,
+            Q1 | Q2 | C6SeverBurst => SkillType::ElementalBurst,
         }
     }
 }
@@ -182,37 +185,8 @@ impl Into<usize> for SkirkDamageEnum {
 }
 
 // ============================================================================
-// Effect Implementation
+// Effect Implementation (C2/C4 handled in damage_internal)
 // ============================================================================
-
-pub struct SkirkEffect {
-    pub constellation: usize,
-    pub ascend: bool,
-    pub death_stacks: usize,          // 死河渡断层数 (0-3)
-    pub in_seven_phase: bool,         // 是否在七相一闪模式下
-    pub serpent_points: f64,          // 蛇之狡谋点数
-    pub c2_active: bool,              // C2 是否激活
-    pub c2_atk_value: f64,            // C2 ATK加成值 (0.70)
-    pub c4_atk_values: [f64; 3],     // C4 ATK加成值 [0.10, 0.20, 0.40]
-    pub void_realm_active: bool,      // 虚境裂隙是否生效
-    pub has_hydro_cryo_team: bool,    // C4: 队伍中是否有水/冰角色
-}
-
-impl<A: Attribute> ChangeAttribute<A> for SkirkEffect {
-    fn change_attribute(&self, attribute: &mut A) {
-        // C2: 大招后 ATK +70% (持续18秒)
-        if self.constellation >= 2 && self.c2_active {
-            attribute.add_atk_percentage("命座「湮远」", self.c2_atk_value);
-        }
-
-        // C4: 冰水队 ATK+ (10%/20%/40% @ 1/2/3层)
-        if self.constellation >= 4 && self.has_hydro_cryo_team && self.death_stacks > 0 {
-            let c4_idx = self.death_stacks.saturating_sub(1).min(2);
-            let c4_bonus = self.c4_atk_values[c4_idx];
-            attribute.add_atk_percentage("命座「万流归寂」", c4_bonus);
-        }
-    }
-}
 
 // ============================================================================
 // Character Implementation
@@ -273,10 +247,9 @@ impl CharacterTrait for Skirk {
         ]),
         skill2: None,
         skill3: Some(&[
-            // Elemental Burst (极恶技·灭 / 极恶技·尽)
+            // Elemental Burst (极恶技·灭)
             CharacterSkillMapItem { index: SkirkDamageEnum::Q1 as usize, text: locale!(zh_cn: "斩击伤害", en: "Slash DMG") },
             CharacterSkillMapItem { index: SkirkDamageEnum::Q2 as usize, text: locale!(zh_cn: "最终段伤害", en: "Final Hit DMG") },
-            CharacterSkillMapItem { index: SkirkDamageEnum::QExtinction as usize, text: locale!(zh_cn: "极恶技·尽 (七相爆发)", en: "Havoc: Extinction") },
             CharacterSkillMapItem { index: SkirkDamageEnum::C6Sever as usize, text: locale!(zh_cn: "C6·协同攻击(普攻)", en: "C6 Sever (Normal)") },
             CharacterSkillMapItem { index: SkirkDamageEnum::C6SeverBurst as usize, text: locale!(zh_cn: "C6·协同攻击(爆发)", en: "C6 Sever (Burst)") },
         ])
@@ -311,58 +284,54 @@ impl CharacterTrait for Skirk {
             ),
             config: ItemConfigType::Int { min: 0, max: 100, default: 50 }
         },
-        // C2 激活状态
+        // 虚境裂隙数量 (A1/极恶技·尽)
         ItemConfig {
-            name: "c2_active",
+            name: "void_realm_cracks",
             title: locale!(
-                zh_cn: "C2: 施放后ATK+",
-                en: "C2: Post-Burst ATK+",
+                zh_cn: "虚境裂隙数量",
+                en: "Void Realm Cracks",
+            ),
+            config: ItemConfigType::Int { min: 0, max: 3, default: 0 }
+        },
+        // 极恶技·尽 凋尽状态
+        ItemConfig {
+            name: "extinction_active",
+            title: locale!(
+                zh_cn: "极恶技·尽 凋尽状态",
+                en: "Havoc: Extinction Active",
             ),
             config: ItemConfigType::Bool { default: false }
         },
-        // 虚境裂隙生效 (A1/C6 效果)
+        // A3: 队伍全水/冰角色
         ItemConfig {
-            name: "void_realm_active",
+            name: "has_all_hydro_cryo_team",
             title: locale!(
-                zh_cn: "虚境裂隙生效",
-                en: "Void Realm Active",
+                zh_cn: "A3: 队伍全水/冰 (E+1)",
+                en: "A3: All Hydro/Cryo Team (E+1)",
             ),
             config: ItemConfigType::Bool { default: false }
-        },
-        // C4: 队伍中是否有水/冰角色
-        ItemConfig {
-            name: "has_hydro_cryo_team",
-            title: locale!(
-                zh_cn: "队伍中有水/冰角色 (C4)",
-                en: "Hydro/Cryo Teammates (C4)",
-            ),
-            config: ItemConfigType::Bool { default: false }
-        },
-        // 极恶技·尽 命中次数
-        ItemConfig {
-            name: "extinction_hit_count",
-            title: locale!(
-                zh_cn: "极恶技·尽 命中次数",
-                en: "Havoc: Extinction Hit Count",
-            ),
-            config: ItemConfigType::Int { min: 0, max: 30, default: 5 }
         },
     ]);
 
     fn damage_internal<D: DamageBuilder>(context: &DamageContext<'_, D::AttributeType>, s: usize, config: &CharacterSkillConfig, _fumo: Option<Element>) -> D::Result {
         let s: SkirkDamageEnum = num::FromPrimitive::from_usize(s).unwrap();
-        let (s1, _s2, s3) = context.character_common_data.get_3_skill();
+        let (s1, s2, s3) = context.character_common_data.get_3_skill();
         let constellation = context.character_common_data.constellation as usize;
         let ascend = context.character_common_data.ascend;
 
         // 解析配置
-        let (in_seven_phase, death_stacks, serpent_points, _c2_active, void_realm_active, _has_hydro_cryo_team, extinction_hit_count) = match *config {
-            CharacterSkillConfig::Skirk { in_seven_phase, death_stacks, serpent_points, c2_active, void_realm_active, has_hydro_cryo_team, extinction_hit_count } =>
-                (in_seven_phase, death_stacks, serpent_points, c2_active, void_realm_active, has_hydro_cryo_team, extinction_hit_count),
-            _ => (true, 0, 50.0, false, false, false, 5)
+        let (in_seven_phase, death_stacks, serpent_points, void_realm_cracks, extinction_active, has_all_hydro_cryo_team) = match *config {
+            CharacterSkillConfig::Skirk { in_seven_phase, death_stacks, serpent_points, void_realm_cracks, extinction_active, has_all_hydro_cryo_team } =>
+                (in_seven_phase, death_stacks, serpent_points, void_realm_cracks, extinction_active, has_all_hydro_cryo_team),
+            _ => (true, 0, 50.0, 0, false, false)
         };
 
-        // 获取倍率
+        // A3: 诸武相授 — 队伍全水/冰时, E技能等级+1
+        let s2 = if has_all_hydro_cryo_team { (s2 + 1).min(14) } else { s2 };
+
+        // 七相模式使用 s2 (E技能等级), 普通模式使用 s1 (普攻等级)
+        let skill_level = if in_seven_phase { s2 } else { s1 };
+
         let mut ratio: f64 = 0.0;
         let mut bonus: f64 = 0.0;  // 额外伤害加成
 
@@ -401,23 +370,24 @@ impl CharacterTrait for Skirk {
 
         match s {
             // Normal Attack (根据模式选择倍率)
-            Normal1 => ratio = norm_dmg1[s1],
-            Normal2 => ratio = norm_dmg2[s1],
-            Normal3_1 => ratio = norm_dmg3_1[s1],
-            Normal3_2 => ratio = norm_dmg3_2[s1],
-            Normal4_1 => ratio = norm_dmg4_1[s1],
+            Normal1 => ratio = norm_dmg1[skill_level],
+            Normal2 => ratio = norm_dmg2[skill_level],
+            Normal3_1 => ratio = norm_dmg3_1[skill_level],
+            Normal3_2 => ratio = norm_dmg3_2[skill_level],
+            Normal4_1 => ratio = norm_dmg4_1[skill_level],
             Normal4_2 => {
                 // N4 第2击仅七相模式有效
-                ratio = if in_seven_phase { norm_dmg4_2[s1] } else { 0.0 };
+                ratio = if in_seven_phase { norm_dmg4_2[skill_level] } else { 0.0 };
             },
-            Normal5 => ratio = norm_dmg5[s1],
+            Normal5 => ratio = norm_dmg5[skill_level],
             Charged => {
-                // 重击: 3段攻击
-                ratio = norm_charged[s1] * 3.0;
+                // 重击: 普通模式×2, 七相模式×3
+                let hits = if in_seven_phase { 3.0 } else { 2.0 };
+                ratio = norm_charged[skill_level] * hits;
             },
-            Plunging1 => ratio = norm_plunge1[s1],
-            Plunging2 => ratio = norm_plunge2[s1],
-            Plunging3 => ratio = norm_plunge3[s1],
+            Plunging1 => ratio = norm_plunge1[skill_level],
+            Plunging2 => ratio = norm_plunge2[skill_level],
+            Plunging3 => ratio = norm_plunge3[skill_level],
 
             // Elemental Burst (极恶技·灭)
             Q1 => {
@@ -435,11 +405,6 @@ impl CharacterTrait for Skirk {
                 bonus = effective_ss * SKIRK_SKILL.q_serpent_bonus[s3];
             },
 
-            // Havoc: Extinction (极恶技·尽 — 七相爆发)
-            QExtinction => {
-                ratio = SKIRK_SKILL.q_extinction_per_hit[s3] * extinction_hit_count as f64;
-            },
-
             // C1: 水晶刃
             QC1 => ratio = SKIRK_SKILL.c1_dmg[s3],
 
@@ -450,18 +415,33 @@ impl CharacterTrait for Skirk {
             C6SeverBurst => ratio = SKIRK_SKILL.c6_sever_burst[s3],
         }
 
+        // 极恶技·尽 (凋尽状态): 给普攻/重击添加额外ATK倍率
+        let mut extinction_bonus = if extinction_active && matches!(s, Normal1 | Normal2 | Normal3_1 | Normal3_2 | Normal4_1 | Normal4_2 | Normal5 | Charged) {
+            let crack_idx = void_realm_cracks.min(3);
+            match crack_idx {
+                0 => SKIRK_SKILL.extinction_bonus_0crack[s3],
+                1 => SKIRK_SKILL.extinction_bonus_1crack[s3],
+                2 => SKIRK_SKILL.extinction_bonus_2crack[s3],
+                3 => SKIRK_SKILL.extinction_bonus_3crack[s3],
+                _ => 0.0,
+            }
+        } else {
+            0.0
+        };
+
         // A4: 死河渡断 — 乘算 (Yoimiya pattern: ratio *= multiplier)
         if ascend && death_stacks > 0 {
             let death_idx = death_stacks.saturating_sub(1).min(2);
             let death_multiplier = match s {
                 Normal1 | Normal2 | Normal3_1 | Normal3_2 | Normal4_1 | Normal4_2 | Normal5 | Charged =>
                     SKIRK_SKILL.passive_death_normal[death_idx],
-                Q1 | Q2 | QExtinction =>
+                Q1 | Q2 =>
                     SKIRK_SKILL.passive_death_burst[death_idx],
                 _ => 1.0
             };
             ratio *= death_multiplier;
             bonus *= death_multiplier;
+            extinction_bonus *= death_multiplier;
         }
 
         let mut builder = D::new();
@@ -474,9 +454,23 @@ impl CharacterTrait for Skirk {
             builder.add_atk_ratio("蛇之狡谋加成", bonus);
         }
 
-        // A1/C6: 虚境裂隙加成
-        if void_realm_active && matches!(s, Q1 | Q2 | QExtinction | QC1 | C6Sever | C6SeverBurst) {
-            builder.add_atk_ratio("虚境裂隙", SKIRK_SKILL.q_void_bonus[s3]);
+        // 极恶技·尽: 凋尽状态额外倍率
+        if extinction_bonus > 0.0 {
+            builder.add_atk_ratio("凋尽加成", extinction_bonus);
+        }
+
+        // C4: 死河渡断层数 ATK+10%/20%/40% (所有伤害)
+        if constellation >= 4 && death_stacks > 0 {
+            let base_atk = context.attribute.get_value(AttributeName::ATKBase);
+            let c4_idx = death_stacks.saturating_sub(1).min(2);
+            let c4_bonus = SKIRK_SKILL.c4_atk[c4_idx];
+            builder.add_extra_atk("C4「万流归寂」ATK+", base_atk * c4_bonus);
+        }
+
+        // C2: 施放极恶技·尽后 ATK+70% (仅普攻/重击, 不影响大招本身)
+        if constellation >= 2 && matches!(s, Normal1 | Normal2 | Normal3_1 | Normal3_2 | Normal4_1 | Normal4_2 | Normal5 | Charged) {
+            let base_atk = context.attribute.get_value(AttributeName::ATKBase);
+            builder.add_extra_atk("C2「湮远」ATK+70%", base_atk * SKIRK_SKILL.c2_atk);
         }
 
         builder.damage(
@@ -489,31 +483,11 @@ impl CharacterTrait for Skirk {
         )
     }
 
-    fn new_effect<A: Attribute>(common_data: &CharacterCommonData, config: &CharacterConfig) -> Option<Box<dyn ChangeAttribute<A>>> {
-        let constellation = common_data.constellation as usize;
-        let ascend = common_data.ascend;
-
-        let (in_seven_phase, death_stacks, serpent_points, c2_active, void_realm_active, has_hydro_cryo_team) = match *config {
-            CharacterConfig::Skirk { in_seven_phase, death_stacks, serpent_points, c2_active, void_realm_active, has_hydro_cryo_team } =>
-                (in_seven_phase, death_stacks, serpent_points, c2_active, void_realm_active, has_hydro_cryo_team),
-            _ => (true, 0, 50.0, false, false, false)
-        };
-
-        let c2_atk_value = if constellation >= 2 { SKIRK_SKILL.c2_atk } else { 0.0 };
-        let c4_atk_values = SKIRK_SKILL.c4_atk;
-
-        Some(Box::new(SkirkEffect {
-            constellation,
-            ascend,
-            death_stacks,
-            in_seven_phase,
-            serpent_points,
-            c2_active,
-            c2_atk_value,
-            c4_atk_values,
-            void_realm_active,
-            has_hydro_cryo_team,
-        }))
+    fn new_effect<A: Attribute>(_common_data: &CharacterCommonData, _config: &CharacterConfig) -> Option<Box<dyn ChangeAttribute<A>>> {
+        // C2/C4 ATK bonuses are conditional and handled in damage_internal:
+        // - C2 ATK+70% only for Normal/Charged (not Burst)
+        // - C4 ATK+% uses death_stacks from skill config
+        None
     }
 
     fn get_target_function_by_role(_role_index: usize, _team: &TeamQuantization, _c: &CharacterCommonData, _w: &WeaponCommonData) -> Box<dyn TargetFunction> {

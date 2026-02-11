@@ -57,10 +57,9 @@ pub enum CharacterSkillConfig {
         in_seven_phase: bool,           // 七相一闪模式
         death_stacks: usize,             // 死河渡断层数 (0-3)
         serpent_points: f64,             // 蛇之狡谋点数
-        c2_active: bool,                 // C2: 施放后ATK+
-        void_realm_active: bool,         // 虚境裂隙是否生效
-        has_hydro_cryo_team: bool,       // C4: 队伍中有水/冰角色
-        extinction_hit_count: usize,     // 极恶技·尽 命中次数
+        void_realm_cracks: usize,        // 虚境裂隙数量 (0-3)
+        extinction_active: bool,         // 极恶技·尽 凋尽状态是否生效
+        has_all_hydro_cryo_team: bool,   // A3: 队伍全水/冰角色
     },
     Flins {
         in_manifest_flame: bool,       // 幽焰显迹模式

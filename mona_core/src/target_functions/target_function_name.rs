@@ -114,6 +114,7 @@ pub enum TargetFunctionName {
     FlinsDefault,
     EscoffierDefault,
     SkirkDefault,
+    SkirkBurst,
     AinoDefault,
     ColumbinaDefault,
     DahliaDefault,

@@ -36,7 +36,7 @@ pub enum WeaponConfig {
     SturdyBone { rate: f64 },
     PeakPatrolSong { stack: f64, rate: f64 },
     CalamityOfEshu { rate: f64 },
-    Azurelight { refine: f64, energy_zero: bool },
+    Azurelight { energy_zero: bool },
 
     // claymore
     WolfsGravestone { rate: f64 },

@@ -73,7 +73,7 @@ impl WeaponTrait for Azurelight {
 
     fn get_effect<A: Attribute>(character: &CharacterCommonData, config: &WeaponConfig) -> Option<Box<dyn WeaponEffect<A>>> {
         let energy_zero = match *config {
-            WeaponConfig::Azurelight { energy_zero, .. } => energy_zero,
+            WeaponConfig::Azurelight { energy_zero } => energy_zero,
             _ => false
         };
         Some(Box::new(AzurelightEffect {

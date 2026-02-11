@@ -82,6 +82,9 @@ const useCDN = !!customEnv["USE_CDN"]
 module.exports = {
     publicPath: process.env.PublicPath || '/',
     devServer: {
+        port: 8282,
+        host: 'localhost',
+        open: false,
         proxy: {
             "^/api/compute_result/analysis": {
                 // target: "http://localhost:8000"

@@ -2,6 +2,7 @@ import {artifactEff, artifactTags} from "@/constants/artifact"
 // @ts-ignore
 import objectHash from "object-hash"
 import {artifactsData} from "@/assets/artifacts"
+import {characterData} from "@/assets/character"
 import { toSnakeCase, deepCopy } from "@/utils/common"
 import { wasmGetArtifactsRankByCharacter } from "@/wasm"
 import {convertArtifact, convertArtifactStatNameBack} from "@/utils/converter"
@@ -179,12 +180,16 @@ export function importMonaJson(rawObj: any, removeNonExisting: boolean, backupIm
     const kumiStore = useKumiStore()
     if(kumiStore.itemById(1)?.dir)
     {
+        const { ta } = useI18n()
         if(backupImportDir) kumiStore.backupImportDir()
         else kumiStore.clearDir(1)
         for (const equipName of equips.keys()) {
            const artifacts = equips.get(equipName)
            if (artifacts !== undefined) {
-               kumiStore.addKumi(1, equipName, artifacts)
+               // Resolve localized character name from characterData
+               const charData = (characterData as any)[equipName]
+               const localizedName = charData ? ta(charData.nameLocale) : equipName
+               kumiStore.addKumi(1, localizedName, artifacts)
            }
         }   
     }

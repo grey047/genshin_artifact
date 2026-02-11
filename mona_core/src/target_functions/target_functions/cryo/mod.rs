@@ -13,6 +13,7 @@ pub mod mika_default;
 pub mod qiqi_default;
 pub mod rosaria_default;
 pub mod shenhe_default;
+pub mod skirk_burst;
 pub mod skirk_default;
 pub mod wriothesley_default;
 
@@ -31,5 +32,6 @@ pub use mika_default::MikaDefaultTargetFunction;
 pub use qiqi_default::QiqiDefaultTargetFunction;
 pub use rosaria_default::RosariaDefaultTargetFunction;
 pub use shenhe_default::ShenheDefaultTargetFunction;
+pub use skirk_burst::SkirkBurstTargetFunction;
 pub use skirk_default::SkirkDefaultTargetFunction;
 pub use wriothesley_default::WriothesleyDefaultTargetFunction;

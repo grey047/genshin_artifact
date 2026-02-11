@@ -48,7 +48,7 @@ pub enum CharacterConfig {
     YumemizukiMizuki { talent2_rate: f64 },
     Iansan { talent1_rate: f64 },
     Varesa { talent1_rate: f64, talent2_stack: f64, passion: bool },
-    Skirk { in_seven_phase: bool, death_stacks: usize, serpent_points: f64, c2_active: bool, void_realm_active: bool, has_hydro_cryo_team: bool },
+    // Skirk: C2/C4 handled in damage_internal via skill config
     Flins { in_manifest_flame: bool, moonsign_level: usize },
     Escoffier { res_shred_active: bool },
     Durin { transmutation_state: usize },

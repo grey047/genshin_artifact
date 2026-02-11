@@ -34,7 +34,12 @@
       "Bash(ls:*)",
       "Bash(python3:*)",
       "Bash(node -e:*)",
-      "WebFetch(domain:frzyc.github.io)"
+      "WebFetch(domain:frzyc.github.io)",
+      "Bash(netstat:*)",
+      "Bash(tasklist:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(cmd /c \"cd /d e:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm\")",
+      "Bash(cmd /c \"cd /d e:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm 2>&1\")"
     ]
   }
 }
