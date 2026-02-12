@@ -117,11 +117,26 @@ impl LaumaDamageEnum {
     }
 }
 
-pub struct LaumaEffect;
+pub struct LaumaEffect {
+    pub moonsign_level: usize,
+    pub has_c2: bool,
+}
 
 impl<A: Attribute> ChangeAttribute<A> for LaumaEffect {
-    fn change_attribute(&self, _attribute: &mut A) {
-        // TODO: Add constellation/talent effects from research data
+    fn change_attribute(&self, attribute: &mut A) {
+        // A4: Cleansing for the Spring
+        // Each point of EM increases E damage by 0.04%, max 32%
+        let em = attribute.get_value(AttributeName::ElementalMastery);
+        let a4_bonus = (em * 0.0004).min(0.32);
+        attribute.set_value_by(AttributeName::BonusElementalSkill, "A4: 奉向甘泉的沐濯", a4_bonus);
+
+        // C2: Twine Warnings and Tales From the North
+        // Lunar-Bloom DMG +40% when Moonsign: Ascendant Gleam
+        if self.has_c2 && self.moonsign_level >= 2 {
+            // This is handled in damage calculation for Lunar-Bloom reactions
+            // For now, we add a general Dendro bonus as approximation
+            attribute.set_value_by(AttributeName::BonusDendro, "C2: 月兆·满辉", 0.40);
+        }
     }
 }
 
@@ -247,10 +262,17 @@ impl CharacterTrait for Lauma {
     }
 
     fn new_effect<A: Attribute>(
-        _common_data: &CharacterCommonData,
-        _config: &CharacterConfig,
+        common_data: &CharacterCommonData,
+        config: &CharacterConfig,
     ) -> Option<Box<dyn ChangeAttribute<A>>> {
-        Some(Box::new(LaumaEffect))
+        let moonsign_level = match *config {
+            CharacterConfig::Lauma { moonsign_level } => moonsign_level,
+            _ => 2
+        };
+        Some(Box::new(LaumaEffect {
+            moonsign_level,
+            has_c2: common_data.constellation >= 2,
+        }))
     }
 
     fn get_target_function_by_role(
