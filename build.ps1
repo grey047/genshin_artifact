@@ -15,7 +15,7 @@ Write-Host "=== genshin_artifact build ===" -ForegroundColor Cyan
 
 # Step 1: cargo check
 if (-not $SkipCheck) {
-    Write-Host "`n[1/3] cargo check ..." -ForegroundColor Yellow
+    Write-Host "`n[1/4] cargo check ..." -ForegroundColor Yellow
     Push-Location "$root\mona_core"
     $checkOutput = cmd /c "cargo check 2>&1"
     $checkExit = $LASTEXITCODE
@@ -30,14 +30,14 @@ if (-not $SkipCheck) {
         exit 1
     }
     Pop-Location
-    Write-Host "[1/3] cargo check OK" -ForegroundColor Green
+    Write-Host "[1/4] cargo check OK" -ForegroundColor Green
 } else {
-    Write-Host "[1/3] cargo check SKIPPED" -ForegroundColor DarkGray
+    Write-Host "[1/4] cargo check SKIPPED" -ForegroundColor DarkGray
 }
 
 # Step 2: gen_meta (regenerate _gen_*.js + i18n)
 if (-not $SkipMeta) {
-    Write-Host "`n[2/3] gen_meta ..." -ForegroundColor Yellow
+    Write-Host "`n[2/4] gen_meta ..." -ForegroundColor Yellow
     Push-Location $root
     npm run gen_meta
     if ($LASTEXITCODE -ne 0) {
@@ -46,14 +46,14 @@ if (-not $SkipMeta) {
         exit 1
     }
     Pop-Location
-    Write-Host "[2/3] gen_meta OK" -ForegroundColor Green
+    Write-Host "[2/4] gen_meta OK" -ForegroundColor Green
 } else {
-    Write-Host "[2/3] gen_meta SKIPPED" -ForegroundColor DarkGray
+    Write-Host "[2/4] gen_meta SKIPPED" -ForegroundColor DarkGray
 }
 
 # Step 3: build:wasm
 if (-not $SkipWasm) {
-    Write-Host "`n[3/3] build:wasm ..." -ForegroundColor Yellow
+    Write-Host "`n[3/4] build:wasm ..." -ForegroundColor Yellow
     Push-Location $root
     npm run build:wasm
     if ($LASTEXITCODE -ne 0) {
@@ -62,9 +62,21 @@ if (-not $SkipWasm) {
         exit 1
     }
     Pop-Location
-    Write-Host "[3/3] build:wasm OK" -ForegroundColor Green
+    Write-Host "[3/4] build:wasm OK" -ForegroundColor Green
 } else {
-    Write-Host "[3/3] build:wasm SKIPPED" -ForegroundColor DarkGray
+    Write-Host "[3/4] build:wasm SKIPPED" -ForegroundColor DarkGray
 }
+
+# Step 4: build frontend (Vue/TS → dist/)
+Write-Host "`n[4/4] npm run build (frontend) ..." -ForegroundColor Yellow
+Push-Location $root
+npm run build
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "frontend build failed, aborting." -ForegroundColor Red
+    Pop-Location
+    exit 1
+}
+Pop-Location
+Write-Host "[4/4] frontend build OK" -ForegroundColor Green
 
 Write-Host "`n=== Build complete ===" -ForegroundColor Cyan

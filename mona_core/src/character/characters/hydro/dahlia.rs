@@ -99,18 +99,18 @@ const DAHLIA_STATIC_DATA: CharacterStaticData = CharacterStaticData {
     ),
     element: Element::Hydro,
     hp: [
-        10456, 10456, 10456, 10456, 10456, 10456, 10456, 10456, 10456, 10456, 10456, 10456, 10456,
-        10456, 10456,
+        1049, 2695, 3477, 5211, 5767, 6632, 7376, 8243, 8800, 9666, 10222, 11089, 11645,
+        12510, 12510,
     ],
     atk: [
-        587, 587, 587, 587, 587, 587, 587, 587, 587, 587, 587, 587, 587, 587, 587,
+        16, 41, 53, 80, 88, 101, 113, 126, 134, 147, 156, 169, 178, 191, 191,
     ],
     def: [
-        630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630,
+        47, 121, 156, 234, 258, 297, 331, 369, 394, 433, 458, 497, 522, 561, 561,
     ],
-    sub_stat: CharacterSubStatFamily::CriticalRate192,
-    weapon_type: WeaponType::Polearm,
-    star: 5,
+    sub_stat: CharacterSubStatFamily::HP240,
+    weapon_type: WeaponType::Sword,
+    star: 4,
     skill_name1: locale!(
         zh_cn: "西风剑术·仪式",
         en: "Favonius Bladework - Ritual",

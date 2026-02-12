@@ -10,11 +10,12 @@ pub struct ADayCarvedFromRisingWindsEffect;
 
 impl<A: Attribute> ArtifactEffect<A> for ADayCarvedFromRisingWindsEffect {
     fn effect2(&self, attribute: &mut A) {
-        attribute.add_atk_percentage("风之时刻2", 0.18);
+        attribute.add_atk_percentage("风起之日2", 0.18);
     }
 
     fn effect4(&self, attribute: &mut A) {
-        attribute.set_value_by(crate::attribute::AttributeName::BonusPlungingAttack, "风之时刻4", 0.30);
+        // ATK +25% for 6s after hit; upgraded to also give CR +20% when Witch's Homework is completed
+        attribute.add_atk_percentage("风起之日4", 0.25);
     }
 }
 
@@ -30,27 +31,27 @@ impl ArtifactTrait for ADayCarvedFromRisingWinds {
         name: ArtifactSetName::ADayCarvedFromRisingWinds,
         name_mona: "ADayCarvedFromRisingWinds",
         name_locale: crate::common::i18n::locale!(
-            zh_cn: "风之时刻",
+            zh_cn: "风起之日",
             en: "A Day Carved From Rising Winds",
         ),
         flower: Some(crate::common::i18n::locale!(
-            zh_cn: "风之花",
+            zh_cn: "风起之花",
             en: "Flower of Rising Winds",
         )),
         feather: Some(crate::common::i18n::locale!(
-            zh_cn: "风之羽",
+            zh_cn: "风起之羽",
             en: "Feather of Rising Winds",
         )),
         sand: Some(crate::common::i18n::locale!(
-            zh_cn: "风之沙",
+            zh_cn: "风起之沙",
             en: "Sands of Rising Winds",
         )),
         goblet: Some(crate::common::i18n::locale!(
-            zh_cn: "风之杯",
+            zh_cn: "风起之杯",
             en: "Goblet of Rising Winds",
         )),
         head: Some(crate::common::i18n::locale!(
-            zh_cn: "风之冠",
+            zh_cn: "风起之冠",
             en: "Crown of Rising Winds",
         )),
         star: (4, 5),
@@ -61,11 +62,11 @@ impl ArtifactTrait for ADayCarvedFromRisingWinds {
         )),
         effect3: None,
         effect4: Some(crate::common::i18n::locale!(
-            zh_cn: "下落攻击伤害提高30%。",
-            en: "Plunging Attack DMG +30%.",
+            zh_cn: "受到攻击后6秒内攻击力+25%；完成魔女的功课后还会额外获得暴击率+20%。",
+            en: "ATK +25% for 6s after being hit; additionally gains CRIT Rate +20% when Witch's Homework is completed.",
         )),
         effect5: None,
-        internal_id: 99903,
+        internal_id: 15044,
     };
 
     #[cfg(not(target_family = "wasm"))]

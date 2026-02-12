@@ -131,10 +131,10 @@ impl CharacterTrait for Aino {
         name: CharacterName::Aino,
         internal_name: "Aino",
         element: Element::Hydro,
-        hp: [1003, 2577, 3326, 4982, 5514, 6343, 7052, 7881, 8413, 9241, 9773, 10602, 11134, 11962, 11962],
+        hp: [939, 2413, 3114, 4665, 5162, 5939, 6603, 7379, 7876, 8652, 9149, 9924, 10422, 11197, 11197],
         atk: [20, 50, 65, 97, 108, 124, 138, 154, 164, 180, 191, 207, 217, 234, 234],
-        def: [63, 162, 209, 313, 346, 398, 443, 495, 528, 580, 613, 665, 699, 751, 751],
-        sub_stat: CharacterSubStatFamily::ATK240,
+        def: [51, 131, 169, 253, 280, 322, 359, 401, 427, 470, 496, 538, 566, 608, 608],
+        sub_stat: CharacterSubStatFamily::ElementalMastery96,
         weapon_type: WeaponType::Claymore,
         star: 4,
         skill_name1: locale!(

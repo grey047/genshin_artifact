@@ -205,8 +205,8 @@ impl CharacterTrait for Skirk {
         element: Element::Cryo,
         // All level stats verified from HHW (Lv100 data added)
         hp: [967, 2508, 3336, 4992, 5581, 6421, 7206, 8055, 8644, 9501, 10089, 10956, 11544, 12417, 13300],
-        atk: [27, 72, 96, 144, 161, 185, 208, 232, 249, 274, 291, 316, 333, 358, 439],
-        def: [62, 162, 216, 324, 362, 416, 467, 522, 561, 616, 655, 711, 749, 806, 864],
+        atk: [28, 75, 100, 149, 167, 192, 216, 241, 258, 284, 302, 328, 345, 371, 455],
+        def: [63, 165, 219, 329, 368, 423, 475, 530, 570, 626, 666, 722, 761, 819, 878],
     sub_stat: CharacterSubStatFamily::CriticalDamage384,
         weapon_type: WeaponType::Sword,
         star: 5,
@@ -257,7 +257,7 @@ impl CharacterTrait for Skirk {
 
     #[cfg(not(target_family = "wasm"))]
     const CONFIG_SKILL: Option<&'static [ItemConfig]> = Some(&[
-        // 七相模式配置
+        // 七相模式配置 (buff相关参数在目标函数侧配置)
         ItemConfig {
             name: "in_seven_phase",
             title: locale!(
@@ -265,51 +265,6 @@ impl CharacterTrait for Skirk {
                 en: "Seven-Phase Flash Mode",
             ),
             config: ItemConfigType::Bool { default: true }
-        },
-        // 死河渡断层数 (A4)
-        ItemConfig {
-            name: "death_stacks",
-            title: locale!(
-                zh_cn: "死河渡断层数",
-                en: "Death's Crossing Stacks",
-            ),
-            config: ItemConfigType::Int { min: 0, max: 3, default: 0 }
-        },
-        // 蛇之狡谋点数
-        ItemConfig {
-            name: "serpent_points",
-            title: locale!(
-                zh_cn: "蛇之狡谋点数",
-                en: "Serpent's Subtlety Points",
-            ),
-            config: ItemConfigType::Int { min: 0, max: 100, default: 50 }
-        },
-        // 虚境裂隙数量 (A1/极恶技·尽)
-        ItemConfig {
-            name: "void_realm_cracks",
-            title: locale!(
-                zh_cn: "虚境裂隙数量",
-                en: "Void Realm Cracks",
-            ),
-            config: ItemConfigType::Int { min: 0, max: 3, default: 0 }
-        },
-        // 极恶技·尽 凋尽状态
-        ItemConfig {
-            name: "extinction_active",
-            title: locale!(
-                zh_cn: "极恶技·尽 凋尽状态",
-                en: "Havoc: Extinction Active",
-            ),
-            config: ItemConfigType::Bool { default: false }
-        },
-        // A3: 队伍全水/冰角色
-        ItemConfig {
-            name: "has_all_hydro_cryo_team",
-            title: locale!(
-                zh_cn: "A3: 队伍全水/冰 (E+1)",
-                en: "A3: All Hydro/Cryo Team (E+1)",
-            ),
-            config: ItemConfigType::Bool { default: false }
         },
     ]);
 

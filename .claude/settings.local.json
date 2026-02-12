@@ -39,7 +39,8 @@
       "Bash(tasklist:*)",
       "Bash(powershell -Command:*)",
       "Bash(cmd /c \"cd /d e:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm\")",
-      "Bash(cmd /c \"cd /d e:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm 2>&1\")"
+      "Bash(cmd /c \"cd /d e:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm 2>&1\")",
+      "Bash(cargo check:*)"
     ]
   }
 }

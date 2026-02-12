@@ -54,12 +54,12 @@ pub enum CharacterSkillConfig {
     Chasca { element_count: usize, c6_rate: f64 },
     Mavuika { after_q: bool },
     Skirk {
-        in_seven_phase: bool,           // 七相一闪模式
-        death_stacks: usize,             // 死河渡断层数 (0-3)
-        serpent_points: f64,             // 蛇之狡谋点数
-        void_realm_cracks: usize,        // 虚境裂隙数量 (0-3)
-        extinction_active: bool,         // 极恶技·尽 凋尽状态是否生效
-        has_all_hydro_cryo_team: bool,   // A3: 队伍全水/冰角色
+        in_seven_phase: bool,                                          // 七相一闪模式
+        #[serde(default)] death_stacks: usize,                         // 死河渡断层数 (0-3), 由目标函数侧配置
+        #[serde(default)] serpent_points: f64,                         // 蛇之狡谋点数, 由目标函数侧配置
+        #[serde(default)] void_realm_cracks: usize,                    // 虚境裂隙数量 (0-3), 由目标函数侧配置
+        #[serde(default = "default_false")] extinction_active: bool,   // 极恶技·尽 凋尽状态, 由目标函数侧配置
+        #[serde(default = "default_false")] has_all_hydro_cryo_team: bool, // A3: 队伍全水/冰, 由目标函数侧配置
     },
     Flins {
         in_manifest_flame: bool,       // 幽焰显迹模式

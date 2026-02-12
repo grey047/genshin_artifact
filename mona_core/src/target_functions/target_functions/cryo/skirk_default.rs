@@ -20,9 +20,7 @@ use crate::weapon::Weapon;
 use crate::weapon::weapon_common_data::WeaponCommonData;
 
 pub struct SkirkDefaultTargetFunction {
-    pub use_charged_attack: f64,  // 重击使用比例
     pub death_stacks: usize,     // 死河渡断层数 (0-3)
-    pub serpent_points: f64,     // 蛇之狡谋点数
     pub void_realm_cracks: usize, // 虚境裂隙数量 (0-3)
     pub extinction_active: bool,  // 极恶技·尽 凋尽状态
     pub has_all_hydro_cryo_team: bool, // A3: 全水/冰队
@@ -32,24 +30,19 @@ impl SkirkDefaultTargetFunction {
     pub fn new(config: &TargetFunctionConfig) -> Self {
         match *config {
             TargetFunctionConfig::SkirkDefault {
-                use_charged_attack,
                 death_stacks,
-                serpent_points,
                 void_realm_cracks,
                 extinction_active,
                 has_all_hydro_cryo_team,
+                ..
             } => Self {
-                use_charged_attack,
                 death_stacks,
-                serpent_points,
                 void_realm_cracks,
                 extinction_active,
                 has_all_hydro_cryo_team,
             },
             _ => Self {
-                use_charged_attack: 0.5,
                 death_stacks: 3,
-                serpent_points: 62.0,
                 void_realm_cracks: 3,
                 extinction_active: true,
                 has_all_hydro_cryo_team: true,
@@ -78,28 +71,12 @@ impl TargetFunctionMetaTrait for SkirkDefaultTargetFunction {
     #[cfg(not(target_family = "wasm"))]
     const CONFIG: Option<&'static [ItemConfig]> = Some(&[
         ItemConfig {
-            name: "use_charged_attack",
-            title: locale!(
-                zh_cn: "重击使用比例",
-                en: "Charged Attack Ratio"
-            ),
-            config: ItemConfigType::Float { default: 0.5, min: 0.0, max: 1.0 }
-        },
-        ItemConfig {
             name: "death_stacks",
             title: locale!(
                 zh_cn: "死河渡断层数",
                 en: "Death's Crossing Stacks"
             ),
             config: ItemConfigType::Int { min: 0, max: 3, default: 3 }
-        },
-        ItemConfig {
-            name: "serpent_points",
-            title: locale!(
-                zh_cn: "蛇之狡谋点数",
-                en: "Serpent's Subtlety Points"
-            ),
-            config: ItemConfigType::Int { min: 0, max: 100, default: 62 }
         },
         ItemConfig {
             name: "void_realm_cracks",
@@ -196,7 +173,7 @@ impl TargetFunction for SkirkDefaultTargetFunction {
         let s_config = CharacterSkillConfig::Skirk {
             in_seven_phase: true,  // 平A流始终在七相模式
             death_stacks: self.death_stacks,
-            serpent_points: self.serpent_points,
+            serpent_points: 0.0,  // 平A流不使用极恶技·灭, SS无影响
             void_realm_cracks: self.void_realm_cracks,
             extinction_active: self.extinction_active,
             has_all_hydro_cryo_team: self.has_all_hydro_cryo_team,
@@ -204,15 +181,26 @@ impl TargetFunction for SkirkDefaultTargetFunction {
 
         type S = <Skirk as CharacterTrait>::DamageEnumType;
 
-        // 普通攻击伤害 (以 Normal5 为代表)
-        let dmg_normal = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal5, &s_config, None).normal.expectation;
-        
-        // 重击伤害
+        // 平A流循环: 5NQ + (5NZ)×3
+        // Q = 极恶技·尽 (无伤害, 仅激活凋尽状态buff普攻, 已通过extinction_active配置体现)
+        // = 4×(N1+N2+N3_1+N3_2+N4_1+N4_2+N5) + 3×Charged
+
+        // 普通攻击链 (七相模式: N1-N5, 含N3双段/N4双段)
+        let dmg_n1 = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal1, &s_config, None).normal.expectation;
+        let dmg_n2 = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal2, &s_config, None).normal.expectation;
+        let dmg_n3_1 = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal3_1, &s_config, None).normal.expectation;
+        let dmg_n3_2 = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal3_2, &s_config, None).normal.expectation;
+        let dmg_n4_1 = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal4_1, &s_config, None).normal.expectation;
+        let dmg_n4_2 = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal4_2, &s_config, None).normal.expectation;
+        let dmg_n5 = Skirk::damage::<SimpleDamageBuilder>(&context, S::Normal5, &s_config, None).normal.expectation;
         let dmg_charged = Skirk::damage::<SimpleDamageBuilder>(&context, S::Charged, &s_config, None).normal.expectation;
 
-        // 总伤害 = 普攻 * (1-重击比) + 重击 * 重击比
-        let total_dmg = dmg_normal * (1.0 - self.use_charged_attack)
-                       + dmg_charged * self.use_charged_attack;
+        // 一条完整普攻链伤害
+        let normal_chain = dmg_n1 + dmg_n2 + dmg_n3_1 + dmg_n3_2 + dmg_n4_1 + dmg_n4_2 + dmg_n5;
+
+        // 总循环伤害: 4条普攻链 + 3次重击 (极恶技·尽无伤害)
+        let total_dmg = normal_chain * 4.0
+                       + dmg_charged * 3.0;
 
         total_dmg
     }

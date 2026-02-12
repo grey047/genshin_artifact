@@ -136,19 +136,19 @@ impl CharacterTrait for Lauma {
             en: "Lauma",
         ),
         element: Element::Dendro,
-        // Base HP: 10264 (Lv1), ATK: 572 (Lv1), DEF: 576 (Lv1)
-        // Using simplified pattern matching other 5-star characters
+        // Base HP: 829 (Lv1), ATK: 20 (Lv1), DEF: 52 (Lv1)
+        // Verified against AvatarExcelConfigData
         hp: [
-            10264, 13256, 14530, 17246, 18897, 21695, 23773, 27317, 29896, 34299, 37581, 43176,
-            47317, 52152, 54913,
+            829, 2151, 2861, 4280, 4785, 5505, 6178, 6906, 7410, 8146, 8650, 9393, 9897, 10646,
+            11403,
         ],
         atk: [
-            572, 739, 811, 962, 1054, 1211, 1326, 1524, 1669, 1916, 2101, 2412, 2644, 2910, 3062,
+            20, 52, 69, 103, 115, 133, 149, 167, 179, 197, 209, 227, 239, 257, 275,
         ],
         def: [
-            576, 744, 816, 968, 1061, 1220, 1337, 1536, 1681, 1929, 2115, 2428, 2660, 2920, 3072,
+            52, 135, 180, 269, 300, 345, 388, 433, 465, 511, 543, 589, 621, 668, 715,
         ],
-        sub_stat: CharacterSubStatFamily::CriticalRate192,
+        sub_stat: CharacterSubStatFamily::ElementalMastery115,
         weapon_type: WeaponType::Catalyst,
         star: 5,
         skill_name1: locale!(

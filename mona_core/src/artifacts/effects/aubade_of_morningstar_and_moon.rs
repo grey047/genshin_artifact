@@ -10,12 +10,13 @@ pub struct AubadeOfMorningstarAndMoonEffect;
 
 impl<A: Attribute> ArtifactEffect<A> for AubadeOfMorningstarAndMoonEffect {
     fn effect2(&self, attribute: &mut A) {
-        attribute.set_value_by(crate::attribute::AttributeName::CriticalDamageBase, "晨星与月之歌2", 0.12);
+        attribute.set_value_by(crate::attribute::AttributeName::ElementalMastery, "晨星与月的晓歌2", 80.0);
     }
 
     fn effect4(&self, attribute: &mut A) {
-        // Lunar reaction damage bonus - placeholder
-        attribute.set_value_by(crate::attribute::AttributeName::USER1, "晨星与月之歌4", 0.32);
+        // Off-field Lunar Reaction DMG +20%; at Ascendant Gleam +40% more
+        // Simplified: base off-field bonus
+        attribute.set_value_by(crate::attribute::AttributeName::USER1, "晨星与月的晓歌4", 0.20);
     }
 }
 
@@ -31,7 +32,7 @@ impl ArtifactTrait for AubadeOfMorningstarAndMoon {
         name: ArtifactSetName::AubadeOfMorningstarAndMoon,
         name_mona: "AubadeOfMorningstarAndMoon",
         name_locale: crate::common::i18n::locale!(
-            zh_cn: "晨星与月之歌",
+            zh_cn: "晨星与月的晓歌",
             en: "Aubade of Morningstar and Moon",
         ),
         flower: Some(crate::common::i18n::locale!(
@@ -57,16 +58,16 @@ impl ArtifactTrait for AubadeOfMorningstarAndMoon {
         star: (4, 5),
         effect1: None,
         effect2: Some(crate::common::i18n::locale!(
-            zh_cn: "暴击伤害提高12%。",
-            en: "CRIT DMG +12%.",
+            zh_cn: "元素精通提高80点。",
+            en: "Elemental Mastery +80.",
         )),
         effect3: None,
         effect4: Some(crate::common::i18n::locale!(
-            zh_cn: "「月」反应伤害提高32%。",
-            en: "Lunar reaction damage +32%.",
+            zh_cn: "后台角色的月反应伤害+20%；处于升华辉光状态时额外+40%；前台角色上场3秒后移除。",
+            en: "Off-field Lunar Reaction DMG +20%; at Ascendant Gleam, additionally +40%; removed 3s after going on-field.",
         )),
         effect5: None,
-        internal_id: 99904,
+        internal_id: 15043,
     };
 
     #[cfg(not(target_family = "wasm"))]

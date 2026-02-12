@@ -19,19 +19,20 @@ impl<A: Attribute> WeaponEffect<A> for AzurelightEffect {
     fn apply(&self, data: &WeaponCommonData, attribute: &mut A) {
         let refine = data.refine as f64;
         
-        // 基础 ATK 加成: 24% + 精炼 * 6%
-        let base_atk_bonus = 0.24 + refine * 0.06;
-        
+        // refine is 1-indexed (R1=1, R2=2, ...)
+        // ATK: 24%-30%-36%-42%-48% → base 0.18 + refine * 0.06
+        let base_atk_bonus = 0.18 + refine * 0.06;
+
         // 能量为0时: ATK 翻倍，且额外 CD
         let energy_multiplier = if self.energy_zero { 2.0 } else { 1.0 };
-        
+
         // ATK 加成
         let atk_bonus = base_atk_bonus * energy_multiplier;
-        attribute.set_value_by(AttributeName::ATK, "白山的馈赐", atk_bonus);
-        
-        // 能量为0时: 暴击伤害加成 40% + 精炼 * 10%
+        attribute.set_value_by(AttributeName::ATKPercentage, "白山的馈赐", atk_bonus);
+
+        // CD: 40%-50%-60%-70%-80% → base 0.30 + refine * 0.10
         if self.energy_zero {
-            let cd_bonus = 0.40 + refine * 0.10;
+            let cd_bonus = 0.30 + refine * 0.10;
             attribute.set_value_by(AttributeName::CriticalDamageBase, "白山的馈赐", cd_bonus);
         }
     }
@@ -42,10 +43,10 @@ pub struct Azurelight;
 impl WeaponTrait for Azurelight {
     const META_DATA: WeaponStaticData = WeaponStaticData {
         name: WeaponName::Azurelight,
-        internal_name: "Sword_Regalis",
+        internal_name: "Sword_OuterSword",
         weapon_type: WeaponType::Sword,
         weapon_sub_stat: Some(WeaponSubStatFamily::CriticalRate96),
-        weapon_base: WeaponBaseATKFamily::ATK608,
+        weapon_base: WeaponBaseATKFamily::ATK674,
         star: 5,
         #[cfg(not(target_family = "wasm"))]
         effect: Some(locale!(

@@ -119,16 +119,16 @@ const DURIN_STATIC_DATA: CharacterStaticData = CharacterStaticData {
     ),
     element: Element::Pyro,
     hp: [
-        14695, 14695, 14695, 14695, 14695, 14695, 14695, 14695, 14695, 14695, 14695, 14695,
-        14695, 14695, 14695,
+        968, 2511, 3341, 4998, 5587, 6429, 7214, 8063, 8653, 9512, 10100, 10967, 11556,
+        12432, 13315,
     ],
     atk: [
-        337, 337, 337, 337, 337, 337, 337, 337, 337, 337, 337, 337, 337, 337, 337,
+        27, 70, 93, 139, 156, 179, 201, 225, 241, 265, 282, 306, 322, 347, 371,
     ],
     def: [
-        630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630,
+        64, 166, 221, 330, 369, 425, 477, 533, 572, 629, 668, 725, 764, 822, 880,
     ],
-    sub_stat: CharacterSubStatFamily::CriticalRate192,
+    sub_stat: CharacterSubStatFamily::CriticalDamage384,
     weapon_type: WeaponType::Sword,
     star: 5,
     skill_name1: locale!(

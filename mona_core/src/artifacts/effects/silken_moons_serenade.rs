@@ -10,12 +10,14 @@ pub struct SilkenMoonsSerenadeEffect;
 
 impl<A: Attribute> ArtifactEffect<A> for SilkenMoonsSerenadeEffect {
     fn effect2(&self, attribute: &mut A) {
-        attribute.set_value_by(crate::attribute::AttributeName::ElementalMastery, "丝绸之月2", 30.0);
+        attribute.set_value_by(crate::attribute::AttributeName::Recharge, "纺月的夜歌2", 0.20);
     }
 
     fn effect4(&self, attribute: &mut A) {
-        // Lunar reaction damage bonus - placeholder
-        attribute.set_value_by(crate::attribute::AttributeName::USER1, "丝绸之月4", 0.20);
+        // Gleaming Moon: Devotion — EM +60/120 (Nascent/Ascendant Gleam)
+        // + Lunar DMG +10% per unique Gleaming Moon effect
+        // Simplified: use base Nascent value
+        attribute.set_value_by(crate::attribute::AttributeName::ElementalMastery, "纺月的夜歌4", 60.0);
     }
 }
 
@@ -31,42 +33,42 @@ impl ArtifactTrait for SilkenMoonsSerenade {
         name: ArtifactSetName::SilkenMoonsSerenade,
         name_mona: "SilkenMoonsSerenade",
         name_locale: crate::common::i18n::locale!(
-            zh_cn: "丝绸之月",
+            zh_cn: "纺月的夜歌",
             en: "Silken Moon's Serenade",
         ),
         flower: Some(crate::common::i18n::locale!(
-            zh_cn: "丝绸之花",
+            zh_cn: "纺月夜歌之花",
             en: "Flower of Silken Moon",
         )),
         feather: Some(crate::common::i18n::locale!(
-            zh_cn: "丝绸之羽",
+            zh_cn: "纺月夜歌之羽",
             en: "Feather of Silken Moon",
         )),
         sand: Some(crate::common::i18n::locale!(
-            zh_cn: "丝绸之沙",
+            zh_cn: "纺月夜歌之沙",
             en: "Sands of Silken Moon",
         )),
         goblet: Some(crate::common::i18n::locale!(
-            zh_cn: "丝绸之杯",
+            zh_cn: "纺月夜歌之杯",
             en: "Goblet of Silken Moon",
         )),
         head: Some(crate::common::i18n::locale!(
-            zh_cn: "丝绸之冠",
+            zh_cn: "纺月夜歌之冠",
             en: "Crown of Silken Moon",
         )),
         star: (4, 5),
         effect1: None,
         effect2: Some(crate::common::i18n::locale!(
-            zh_cn: "元素精通提高30点。",
-            en: "Elemental Mastery +30.",
+            zh_cn: "元素充能效率提高20%。",
+            en: "Energy Recharge +20%.",
         )),
         effect3: None,
         effect4: Some(crate::common::i18n::locale!(
-            zh_cn: "「月」反应伤害提高20%。",
-            en: "Lunar reaction damage +20%.",
+            zh_cn: "辉月·奉献：获得初月辉光时元素精通+60，升华辉光时元素精通+120；此外每拥有一种不同的辉月效果，月反应伤害+10%。",
+            en: "Gleaming Moon: Devotion — When Nascent Gleam is obtained, EM +60; when Ascendant Gleam is obtained, EM +120. Additionally, Lunar DMG +10% per unique Gleaming Moon effect.",
         )),
         effect5: None,
-        internal_id: 99902,
+        internal_id: 15042,
     };
 
     #[cfg(not(target_family = "wasm"))]

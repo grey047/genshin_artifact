@@ -62,11 +62,11 @@ impl CharacterTrait for Escoffier {
         element: Element::Cryo,
         // Base stats (Lv1-90 + 100级数据)
         // TODO: Verify actual data from KQM/HHW
-        hp: [1030, 2659, 3538, 5295, 5914, 6807, 7641, 8533, 9159, 10072, 10700, 11621, 12248, 13175, 14112],
+        hp: [1039, 2682, 3569, 5341, 5966, 6867, 7708, 8608, 9239, 10160, 10794, 11723, 12355, 13290, 14235],
         atk: [27, 71, 95, 142, 159, 183, 205, 229, 246, 270, 287, 312, 329, 354, 379],
-        def: [63, 164, 218, 327, 365, 420, 472, 527, 566, 622, 661, 718, 757, 815, 872],
-        sub_stat: CharacterSubStatFamily::ATK288,
-        weapon_type: WeaponType::Catalyst,
+        def: [57, 148, 197, 296, 330, 380, 427, 477, 512, 563, 598, 650, 685, 737, 789],
+        sub_stat: CharacterSubStatFamily::CriticalRate192,
+        weapon_type: WeaponType::Polearm,
         star: 5,
         skill_name1: locale!(zh_cn: "烹饪技艺", en: "Kitchen Skills"),
         skill_name2: locale!(zh_cn: "低温烹饪", en: "Low-Temperature Cooking"),

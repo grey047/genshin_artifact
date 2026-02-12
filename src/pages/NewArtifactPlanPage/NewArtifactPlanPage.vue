@@ -1159,14 +1159,32 @@ const showDamageAnalysisDialog = ref(false)
 const damageAnalysisComponent = ref<null | InstanceType<typeof DamageAnalysis>>(null)
 
 const damageAnalysisWasmInterface = computed(() => {
-    // console.log("123")
+    // Merge target function config into skill config so that TF-side settings
+    // (e.g. death_stacks, serpent_points) propagate to damage calculation.
+    // Skill config values take precedence; unknown fields are ignored by Serde.
+    let mergedSkill = characterSkillInterface.value
+    const tfCfg = targetFunctionConfig.value
+    const skillCfg = mergedSkill.config
+    if (tfCfg && typeof tfCfg === "object" && skillCfg && typeof skillCfg === "object") {
+        const tfKey = Object.keys(tfCfg)[0]
+        const skillKey = Object.keys(skillCfg)[0]
+        if (tfKey && skillKey) {
+            mergedSkill = {
+                ...mergedSkill,
+                config: {
+                    [skillKey]: { ...tfCfg[tfKey], ...skillCfg[skillKey] }
+                }
+            }
+        }
+    }
+
     return {
         character: characterInterface.value,
         weapon: weaponInterface.value,
         buffs: buffsInterface.value,
         artifacts: artifactWasmFormat.value,
         artifact_config: artifactConfigForCalculator.value,
-        skill: characterSkillInterface.value,
+        skill: mergedSkill,
         enemy: enemyInterface.value,
     }
 })

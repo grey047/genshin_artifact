@@ -10,12 +10,14 @@ pub struct NightOfTheSkysUnveilingEffect;
 
 impl<A: Attribute> ArtifactEffect<A> for NightOfTheSkysUnveilingEffect {
     fn effect2(&self, attribute: &mut A) {
-        attribute.set_value_by(crate::attribute::AttributeName::CriticalBase, "天空之舞2", 0.08);
+        attribute.set_value_by(crate::attribute::AttributeName::ElementalMastery, "穹境示现之夜2", 80.0);
     }
 
     fn effect4(&self, attribute: &mut A) {
-        // Lunar reaction damage bonus - placeholder, requires new attribute
-        attribute.set_value_by(crate::attribute::AttributeName::USER1, "天空之舞4", 0.20);
+        // Gleaming Moon: Intent — CR +15/30% (Nascent/Ascendant Gleam)
+        // + Lunar DMG +10% per unique Gleaming Moon effect
+        // Simplified: use placeholder for conditional CR buff
+        attribute.set_value_by(crate::attribute::AttributeName::CriticalBase, "穹境示现之夜4", 0.15);
     }
 }
 
@@ -31,42 +33,42 @@ impl ArtifactTrait for NightOfTheSkysUnveiling {
         name: ArtifactSetName::NightOfTheSkysUnveiling,
         name_mona: "NightOfTheSkysUnveiling",
         name_locale: crate::common::i18n::locale!(
-            zh_cn: "天空之舞",
+            zh_cn: "穹境示现之夜",
             en: "Night of the Sky's Unveiling",
         ),
         flower: Some(crate::common::i18n::locale!(
-            zh_cn: "天空之花",
+            zh_cn: "穹境示现之花",
             en: "Flower of the Unveiled Sky",
         )),
         feather: Some(crate::common::i18n::locale!(
-            zh_cn: "天空之羽",
+            zh_cn: "穹境示现之羽",
             en: "Feather of the Unveiled Sky",
         )),
         sand: Some(crate::common::i18n::locale!(
-            zh_cn: "天空之沙",
+            zh_cn: "穹境示现之沙",
             en: "Sands of the Unveiled Sky",
         )),
         goblet: Some(crate::common::i18n::locale!(
-            zh_cn: "天空之杯",
+            zh_cn: "穹境示现之杯",
             en: "Goblet of the Unveiled Sky",
         )),
         head: Some(crate::common::i18n::locale!(
-            zh_cn: "天空之冠",
+            zh_cn: "穹境示现之冠",
             en: "Crown of the Unveiled Sky",
         )),
         star: (4, 5),
         effect1: None,
         effect2: Some(crate::common::i18n::locale!(
-            zh_cn: "暴击率提高8%。",
-            en: "CRIT Rate +8%.",
+            zh_cn: "元素精通提高80点。",
+            en: "Elemental Mastery +80.",
         )),
         effect3: None,
         effect4: Some(crate::common::i18n::locale!(
-            zh_cn: "「月」反应伤害提高20%。",
-            en: "Lunar reaction damage +20%.",
+            zh_cn: "辉月·心意：获得初月辉光时暴击率+15%，升华辉光时暴击率+30%；此外每拥有一种不同的辉月效果，月反应伤害+10%。",
+            en: "Gleaming Moon: Intent — When Nascent Gleam is obtained, CRIT Rate +15%; when Ascendant Gleam is obtained, CRIT Rate +30%. Additionally, Lunar DMG +10% per unique Gleaming Moon effect.",
         )),
         effect5: None,
-        internal_id: 99901,
+        internal_id: 15041,
     };
 
     #[cfg(not(target_family = "wasm"))]
