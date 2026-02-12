@@ -45,7 +45,7 @@ impl WeaponTrait for Azurelight {
         name: WeaponName::Azurelight,
         internal_name: "Sword_OuterSword",
         weapon_type: WeaponType::Sword,
-        weapon_sub_stat: Some(WeaponSubStatFamily::CriticalRate96),
+        weapon_sub_stat: Some(WeaponSubStatFamily::CriticalRate48),
         weapon_base: WeaponBaseATKFamily::ATK674,
         star: 5,
         #[cfg(not(target_family = "wasm"))]
