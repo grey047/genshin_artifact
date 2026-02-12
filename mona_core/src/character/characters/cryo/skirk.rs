@@ -205,8 +205,8 @@ impl CharacterTrait for Skirk {
         element: Element::Cryo,
         // All level stats verified from HHW (Lv100 data added)
         hp: [967, 2508, 3336, 4992, 5581, 6421, 7206, 8055, 8644, 9501, 10089, 10956, 11544, 12417, 13300],
-        atk: [28, 75, 100, 149, 167, 192, 216, 241, 258, 284, 302, 328, 345, 371, 455],
-        def: [63, 165, 219, 329, 368, 423, 475, 530, 570, 626, 666, 722, 761, 819, 878],
+        atk: [28, 72, 96, 144, 161, 186, 208, 233, 250, 274, 292, 317, 334, 359, 439],
+        def: [63, 163, 217, 324, 362, 417, 468, 523, 561, 617, 655, 711, 750, 806, 863],
     sub_stat: CharacterSubStatFamily::CriticalDamage384,
         weapon_type: WeaponType::Sword,
         star: 5,

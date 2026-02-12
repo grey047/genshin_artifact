@@ -26,9 +26,9 @@ impl<A: Attribute> WeaponEffect<A> for AzurelightEffect {
         // 能量为0时: ATK 翻倍，且额外 CD
         let energy_multiplier = if self.energy_zero { 2.0 } else { 1.0 };
 
-        // ATK 加成
+        // ATK 加成 (使用 add_atk_percentage: base_atk * bonus%)
         let atk_bonus = base_atk_bonus * energy_multiplier;
-        attribute.set_value_by(AttributeName::ATKPercentage, "白山的馈赐", atk_bonus);
+        attribute.add_atk_percentage("白山的馈赐", atk_bonus);
 
         // CD: 40%-50%-60%-70%-80% → base 0.30 + refine * 0.10
         if self.energy_zero {
