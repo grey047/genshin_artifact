@@ -8,29 +8,187 @@
                 :label="t('misc.type1')"
             >
             </el-table-column>
-            <el-table-column
-                prop="expectation"
-                :label="t('dmg.expect')"
-            ></el-table-column>
-            <el-table-column
-                prop="critical"
-                :label="t('dmg.crit')"
-            ></el-table-column>
-            <el-table-column
-                prop="nonCritical"
-                :label="t('dmg.nonCrit')"
-            ></el-table-column>
+            <el-table-column :label="t('dmg.expect')">
+                <template #default="{ row }">
+                    <el-tooltip placement="top" :show-after="200" :disabled="!row.breakdown">
+                        <template #content>
+                            <div class="breakdown-tooltip" v-if="row.breakdown">
+                                <template v-if="row.breakdown.isHeal">
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">基础治疗量</span>
+                                        <span class="breakdown-value">{{ row.breakdown.baseDamage.toFixed(1) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 治疗加成</span>
+                                        <span class="breakdown-value">{{ row.breakdown.healingBonusMult.toFixed(4) }}</span>
+                                    </div>
+                                </template>
+                                <template v-else-if="row.breakdown.isShield">
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">基础护盾量</span>
+                                        <span class="breakdown-value">{{ row.breakdown.baseDamage.toFixed(1) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 护盾强效</span>
+                                        <span class="breakdown-value">{{ row.breakdown.shieldStrengthMult.toFixed(4) }}</span>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">基础伤害</span>
+                                        <span class="breakdown-value">{{ row.breakdown.baseDamage.toFixed(1) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 伤害加成</span>
+                                        <span class="breakdown-value">{{ row.breakdown.bonusMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 暴击期望</span>
+                                        <span class="breakdown-value">{{ (1 + row.breakdown.critRate * row.breakdown.critDmg).toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 防御乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.defMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 抗性乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.resMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item" v-if="row.breakdown.reactionMult !== 1">
+                                        <span class="breakdown-label">× 反应乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.reactionMult.toFixed(4) }}</span>
+                                    </div>
+                                </template>
+                                <div class="breakdown-divider"></div>
+                                <div class="breakdown-item breakdown-result">
+                                    <span class="breakdown-label">= 最终</span>
+                                    <span class="breakdown-value">{{ row.expectation }}</span>
+                                </div>
+                            </div>
+                        </template>
+                        <span class="damage-cell">{{ row.expectation }}</span>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column :label="t('dmg.crit')">
+                <template #default="{ row }">
+                    <el-tooltip placement="top" :show-after="200" :disabled="!row.breakdown">
+                        <template #content>
+                            <div class="breakdown-tooltip" v-if="row.breakdown">
+                                <template v-if="row.breakdown.isHeal || row.breakdown.isShield">
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">—</span>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">基础伤害</span>
+                                        <span class="breakdown-value">{{ row.breakdown.baseDamage.toFixed(1) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 伤害加成</span>
+                                        <span class="breakdown-value">{{ row.breakdown.bonusMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 暴击伤害</span>
+                                        <span class="breakdown-value">{{ (1 + row.breakdown.critDmg).toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 防御乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.defMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 抗性乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.resMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item" v-if="row.breakdown.reactionMult !== 1">
+                                        <span class="breakdown-label">× 反应乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.reactionMult.toFixed(4) }}</span>
+                                    </div>
+                                </template>
+                                <div class="breakdown-divider"></div>
+                                <div class="breakdown-item breakdown-result">
+                                    <span class="breakdown-label">= 最终</span>
+                                    <span class="breakdown-value">{{ row.critical }}</span>
+                                </div>
+                            </div>
+                        </template>
+                        <span class="damage-cell">{{ row.critical }}</span>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column :label="t('dmg.nonCrit')">
+                <template #default="{ row }">
+                    <el-tooltip placement="top" :show-after="200" :disabled="!row.breakdown">
+                        <template #content>
+                            <div class="breakdown-tooltip" v-if="row.breakdown">
+                                <template v-if="row.breakdown.isHeal || row.breakdown.isShield">
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">—</span>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">基础伤害</span>
+                                        <span class="breakdown-value">{{ row.breakdown.baseDamage.toFixed(1) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 伤害加成</span>
+                                        <span class="breakdown-value">{{ row.breakdown.bonusMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 防御乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.defMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">× 抗性乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.resMult.toFixed(4) }}</span>
+                                    </div>
+                                    <div class="breakdown-item" v-if="row.breakdown.reactionMult !== 1">
+                                        <span class="breakdown-label">× 反应乘区</span>
+                                        <span class="breakdown-value">{{ row.breakdown.reactionMult.toFixed(4) }}</span>
+                                    </div>
+                                </template>
+                                <div class="breakdown-divider"></div>
+                                <div class="breakdown-item breakdown-result">
+                                    <span class="breakdown-label">= 最终</span>
+                                    <span class="breakdown-value">{{ row.nonCritical }}</span>
+                                </div>
+                            </div>
+                        </template>
+                        <span class="damage-cell">{{ row.nonCritical }}</span>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
         </el-table>
     </div>
 </template>
 
 <script>
 import {useI18n} from "@/i18n/i18n";
+import { LEVEL_MULTIPLIER } from "@/constants/levelMultiplier"
+
+function sumObj(obj) {
+    if (!obj) return 0
+    let s = 0
+    for (const key in obj) {
+        s += obj[key]
+    }
+    return s
+}
 
 export default {
     name: "DamageList",
     props: {
-        analysisFromWasm: {}
+        analysisFromWasm: {},
+        enemyConfig: {
+            type: Object,
+            default: () => ({ level: 90, electro_res: 0.1, pyro_res: 0.1, hydro_res: 0.1, cryo_res: 0.1, geo_res: 0.1, anemo_res: 0.1, dendro_res: 0.1, physical_res: 0.1 })
+        },
+        characterLevel: {
+            type: Number,
+            default: 90
+        }
     },
     computed: {
         element() {
@@ -38,22 +196,6 @@ export default {
         },
 
         normalDamageTitle() {
-            // if (this.analysisFromWasm.is_heal) {
-            //     return "治疗"
-            // } else {
-            //     const map = {
-            //         "Pyro": "火元素伤害",
-            //         "Hydro": "水元素伤害",
-            //         "Electro": "雷元素伤害",
-            //         "Cryo": "冰元素伤害",
-            //         "Dendro": "草元素伤害",
-            //         "Geo": "岩元素伤害",
-            //         "Anemo": "风元素伤害",
-            //         "Physical": "物理伤害",
-            //     }
-            //     return map[this.element]
-            // }
-
             if (this.analysisFromWasm.is_heal) {
                 return this.t("dmg.heal")
             } else {
@@ -61,54 +203,144 @@ export default {
             }
         },
 
+        // Compute all breakdown factors from the DamageAnalysis data
+        breakdownBase() {
+            const a = this.analysisFromWasm
+            if (!a) return null
+
+            const atk = sumObj(a.atk)
+            const atkRatio = sumObj(a.atk_ratio)
+            const def = sumObj(a.def)
+            const defRatio = sumObj(a.def_ratio)
+            const hp = sumObj(a.hp)
+            const hpRatio = sumObj(a.hp_ratio)
+            const em = sumObj(a.em)
+            const emRatio = sumObj(a.em_ratio)
+            const extraDamage = sumObj(a.extra_damage)
+            const baseDamage = atk * atkRatio + def * defRatio + hp * hpRatio + em * emRatio + extraDamage
+
+            const bonus = sumObj(a.bonus)
+            const bonusMult = 1 + bonus
+
+            const healingBonus = sumObj(a.healing_bonus)
+            const healingBonusMult = 1 + healingBonus
+
+            const shieldStrength = sumObj(a.shield_strength)
+            const shieldStrengthMult = 1 + shieldStrength
+
+            const critRate = Math.min(sumObj(a.critical), 1)
+            const critDmg = sumObj(a.critical_damage)
+
+            const defMinus = sumObj(a.def_minus)
+            const defPen = sumObj(a.def_penetration)
+            const charLvl = this.characterLevel
+            const enemyLvl = this.enemyConfig.level
+            const c = 100 + charLvl
+            const defMult = c / ((1 - defPen) * (1 - defMinus) * (100 + enemyLvl) + c)
+
+            const elementKey = this.element.toLowerCase() + "_res"
+            const enemyRes = this.enemyConfig[elementKey] ?? 0.1
+            const resMinus = sumObj(a.res_minus)
+            const res = enemyRes - resMinus
+            let resMult
+            if (res > 0.75) {
+                resMult = 1 / (1 + res * 4)
+            } else if (res > 0) {
+                resMult = 1 - res
+            } else {
+                resMult = 1 - res / 2
+            }
+
+            const meltEnhance = sumObj(a.melt_enhance)
+            const meltRatio = this.element === "Pyro" ? 2.0 : 1.5
+            const meltMult = meltRatio * (1 + meltEnhance)
+
+            const vapEnhance = sumObj(a.vaporize_enhance)
+            const vapRatio = this.element === "Hydro" ? 2.0 : 1.5
+            const vapMult = vapRatio * (1 + vapEnhance)
+
+            const spreadEnhance = sumObj(a.spread_compose)
+            const spreadBaseDamage = baseDamage + LEVEL_MULTIPLIER[charLvl - 1] * 1.25 * (1 + spreadEnhance)
+
+            const aggravateEnhance = sumObj(a.aggravate_compose)
+            const aggravateBaseDamage = baseDamage + LEVEL_MULTIPLIER[charLvl - 1] * 1.15 * (1 + aggravateEnhance)
+
+            return {
+                baseDamage,
+                bonusMult,
+                healingBonusMult,
+                shieldStrengthMult,
+                critRate,
+                critDmg,
+                defMult,
+                resMult,
+                meltMult,
+                vapMult,
+                spreadBaseDamage,
+                aggravateBaseDamage,
+                isHeal: !!a.is_heal,
+                isShield: !!a.is_shield,
+            }
+        },
+
         tableData() {
             let temp = []
-            const NO_DATA = "无数据"
-
             const r = (x) => Math.round(x)
+            const base = this.breakdownBase
 
-            const push = (name, title) => {
+            const makeBreakdown = (reactionType) => {
+                if (!base) return null
+                let baseDmg = base.baseDamage
+                let reactionMult = 1
+
+                if (reactionType === "melt") {
+                    reactionMult = base.meltMult
+                } else if (reactionType === "vaporize") {
+                    reactionMult = base.vapMult
+                } else if (reactionType === "spread") {
+                    baseDmg = base.spreadBaseDamage
+                } else if (reactionType === "aggravate") {
+                    baseDmg = base.aggravateBaseDamage
+                }
+
+                return {
+                    baseDamage: baseDmg,
+                    bonusMult: base.bonusMult,
+                    healingBonusMult: base.healingBonusMult,
+                    shieldStrengthMult: base.shieldStrengthMult,
+                    critRate: base.critRate,
+                    critDmg: base.critDmg,
+                    defMult: base.defMult,
+                    resMult: base.resMult,
+                    reactionMult,
+                    isHeal: base.isHeal,
+                    isShield: base.isShield,
+                }
+            }
+
+            const push = (name, title, reactionType) => {
                 temp.push({
-                    expectation: r(this.analysisFromWasm[name]?.expectation) ?? NO_DATA,
-                    critical: r(this.analysisFromWasm[name]?.critical) ?? NO_DATA,
-                    nonCritical: r(this.analysisFromWasm[name]?.non_critical) ?? NO_DATA,
+                    expectation: r(this.analysisFromWasm[name]?.expectation) ?? "—",
+                    critical: r(this.analysisFromWasm[name]?.critical) ?? "—",
+                    nonCritical: r(this.analysisFromWasm[name]?.non_critical) ?? "—",
                     name: title,
+                    breakdown: makeBreakdown(reactionType || "normal"),
                 })
             }
 
-            // temp.push({
-            //     expectation: r(this.analysisFromWasm.normal?.expectation) ?? NO_DATA,
-            //     critical: r(this.analysisFromWasm.normal?.critical) ?? NO_DATA,
-            //     nonCritical: r(this.analysisFromWasm.normal?.non_critical) ?? NO_DATA,
-            //     name: this.normalDamageTitle
-            //     // name: t("dmg", this.element)
-            // })
-
-            push("normal", this.normalDamageTitle)
+            push("normal", this.normalDamageTitle, "normal")
 
             if (this.analysisFromWasm.melt) {
-                push("melt", this.t("dmg.melt"))
-                // temp.push({
-                //     expectation: r(this.analysisFromWasm.melt?.expectation) ?? NO_DATA,
-                //     critical: r(this.analysisFromWasm.melt?.critical) ?? NO_DATA,
-                //     nonCritical: r(this.analysisFromWasm.melt?.non_critical) ?? NO_DATA,
-                //     name: this.t("dmg.melt")
-                // })
+                push("melt", this.t("dmg.melt"), "melt")
             }
             if (this.analysisFromWasm.vaporize) {
-                push("vaporize", this.t("dmg.vaporize"))
-                // temp.push({
-                //     expectation: r(this.analysisFromWasm.vaporize?.expectation) ?? NO_DATA,
-                //     critical: r(this.analysisFromWasm.vaporize?.critical) ?? NO_DATA,
-                //     nonCritical: r(this.analysisFromWasm.vaporize?.non_critical) ?? NO_DATA,
-                //     name: this.t("dmg.vaporize")
-                // })
+                push("vaporize", this.t("dmg.vaporize"), "vaporize")
             }
             if (this.analysisFromWasm.spread) {
-                push("spread", this.t("dmg.spread"))
+                push("spread", this.t("dmg.spread"), "spread")
             }
             if (this.analysisFromWasm.aggravate) {
-                push("aggravate", this.t("dmg.aggravate"))
+                push("aggravate", this.t("dmg.aggravate"), "aggravate")
             }
 
             return temp
@@ -125,49 +357,37 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.item {
-    height: 32px;
+.damage-cell {
+    cursor: default;
+}
+
+.breakdown-tooltip {
+    min-width: 200px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.breakdown-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
+    gap: 24px;
 
-    &:hover {
-        background-color: rgb(241, 241, 241);
+    .breakdown-label {
+        white-space: nowrap;
     }
 
-    .name {
-        
+    .breakdown-value {
+        font-family: monospace;
+        white-space: nowrap;
     }
+}
 
-    .numbers {
-        display: flex;
-        gap: 4px;
-    }
+.breakdown-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 4px 0;
+}
 
-    .number {
-        padding: 4px;
-        border-radius: 3px;
-    }
-
-    .melt {
-        color: rgb(63, 63, 63);
-        // background-color: rgb(155, 218, 255);
-        background-image: url("@image/misc/cryo");
-        // background-size: 48px;
-        background-position-x: -20px;
-        background-position-y: -30px;
-        background-repeat: no-repeat;
-    }
-
-    .pyro {
-        color: rgb(255, 95, 95);
-        background-color: rgb(255, 224, 224);
-    }
-
-    .physical {
-        color: rgb(71, 71, 71);
-        background-color: rgb(218, 218, 218);
-    }
+.breakdown-result {
+    font-weight: bold;
 }
 </style>

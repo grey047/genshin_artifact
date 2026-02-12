@@ -624,12 +624,16 @@
                     ></select-character-skill>
                     <damage-panel
                         :analysis-from-wasm="characterDamageAnalysis"
+                        :enemy-config="enemyConfig"
+                        :character-level="characterLevelNumber"
                     ></damage-panel>
                 </div>
 
                 <h3 class="common-title2" style="margin-top: 24px">{{ t("calcPage.dmg2") }}</h3>
                 <transformative-damage
                     :data="characterTransformativeDamage"
+                    :enemy-config="enemyConfig"
+                    :character-level="characterLevelNumber"
                 ></transformative-damage>
             </el-col>
 
