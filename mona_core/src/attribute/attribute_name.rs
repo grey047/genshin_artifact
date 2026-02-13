@@ -117,10 +117,15 @@ pub enum AttributeName {
     EnhanceLunarBloom,        // 月绽放反应伤害加成 (种子)
     EnhanceLunarCharged,      // 月感电伤害加成
     EnhanceLunarCrystallize,  // 月结晶伤害加成
-    LunarBloomBaseDmg,        // 月绽放基础伤害加成 (A3天赋)
+    LunarBloomBaseDmg,        // 月绽放基础伤害加成 (A3天赋, Q苍色岛格)
     LunarBloomCritRate,       // 月绽放暴击率 (A1天赋)
     LunarBloomCritDMG,        // 月绽放暴击伤害 (A1天赋)
     ElevateLunarBloom,        // 直伤月绽放擢升加成 (C6等)
+
+    // Bloom reactions base DMG (for Pale Hymn and similar effects)
+    BloomBaseDmg,             // 绽放基础伤害加成
+    HyperbloomBaseDmg,        // 超绽放基础伤害加成
+    BurgeonBaseDmg,           // 烈绽放基础伤害加成
 
     HPRatioBase,
     HPRatioNormalAttack,

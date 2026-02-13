@@ -30,6 +30,8 @@ pub struct LaumaSkillType {
     pub e_dmg2: [f64; 15],
     pub e_dmg3: [f64; 15],
     pub q_dmg1: [f64; 15],
+    pub pale_hymn_bloom: [f64; 15],  // Bloom/Hyperbloom/Burgeon
+    pub pale_hymn_lunar: [f64; 15],  // Lunar-Bloom
 }
 
 pub const LAUMA_SKILL: LaumaSkillType = LaumaSkillType {
@@ -87,6 +89,18 @@ pub const LAUMA_SKILL: LaumaSkillType = LaumaSkillType {
         4.160, 4.496, 4.832, 5.312, 5.648, 5.984, 6.464, 6.944, 7.424, 8.048, 8.672, 9.296, 9.920,
         10.544, 11.168,
     ],
+    // Pale Hymn: Bloom/Hyperbloom/Burgeon DMG Increase (% EM)
+    // Lv1: 277.76%, Lv10: 499.97%, Lv13: 590.24%, Lv15: 659.68%
+    pale_hymn_bloom: [
+        2.7776, 2.9859, 3.1942, 3.4720, 3.6803, 3.8886, 4.1664, 4.4442, 4.7219, 4.9997,
+        5.2774, 5.5552, 5.9024, 6.2496, 6.5968,
+    ],
+    // Pale Hymn: Lunar-Bloom DMG Increase (% EM)
+    // Lv1: 222.24%, Lv10: 400.03%, Lv13: 472.26%, Lv15: 527.82%
+    pale_hymn_lunar: [
+        2.2224, 2.3891, 2.5558, 2.7780, 2.9447, 3.1114, 3.3336, 3.5558, 3.7781, 4.0003,
+        4.2226, 4.4448, 4.7226, 5.0004, 5.2782,
+    ],
 };
 
 damage_enum!(
@@ -124,6 +138,8 @@ pub struct LaumaEffect {
     pub has_c2: bool,
     pub spirit_envoy_count: usize, // 草露数量 (1-3)
     pub has_c6: bool,
+    pub pale_hymn_stacks: usize,   // 苍色岛格层数 (0-18, from Q)
+    pub skill_level_q: usize,      // Q 技能等级 (用于 Pale Hymn 加成)
 }
 
 impl<A: Attribute> ChangeAttribute<A> for LaumaEffect {
@@ -157,6 +173,43 @@ impl<A: Attribute> ChangeAttribute<A> for LaumaEffect {
         // Elevated Lunar-Bloom DMG +25% when Moonsign: Ascendant Gleam
         if self.has_c6 && self.moonsign_level >= 2 {
             attribute.set_value_by(AttributeName::ElevateLunarBloom, "C6: 月兆·满辉", 0.25);
+        }
+
+        // Q: Pale Hymn - Party-wide reaction DMG buffs based on EM
+        // Each stack provides full bonus, consumed on reaction
+        if self.pale_hymn_stacks > 0 {
+            let s3 = (self.skill_level_q - 1).min(14);
+            
+            // Base Pale Hymn values (C0)
+            let bloom_ratio = LAUMA_SKILL.pale_hymn_bloom[s3];   // Bloom/Hyperbloom/Burgeon
+            let lunar_ratio = LAUMA_SKILL.pale_hymn_lunar[s3];   // Lunar-Bloom
+            
+            // C2: Additional +500% EM for Bloom/Hyperbloom/Burgeon, +400% EM for Lunar-Bloom
+            let (c2_bloom_bonus, c2_lunar_bonus) = if self.has_c2 {
+                (5.0, 4.0)  // +500% EM, +400% EM
+            } else {
+                (0.0, 0.0)
+            };
+            
+            // Total EM ratios
+            let total_bloom_ratio = bloom_ratio + c2_bloom_bonus;
+            let total_lunar_ratio = lunar_ratio + c2_lunar_bonus;
+            
+            // Apply as base DMG bonus (EM × ratio × stacks)
+            // Note: Each reaction consumes 1 stack, but here we model max potential
+            let bloom_dmg = em * total_bloom_ratio * self.pale_hymn_stacks as f64;
+            let lunar_dmg = em * total_lunar_ratio * self.pale_hymn_stacks as f64;
+            
+            if bloom_dmg > 0.0 {
+                // Use a custom attribute or existing one for reaction base DMG
+                attribute.set_value_by(AttributeName::BloomBaseDmg, "Q: 苍色岛格", bloom_dmg);
+                attribute.set_value_by(AttributeName::HyperbloomBaseDmg, "Q: 苍色岛格", bloom_dmg);
+                attribute.set_value_by(AttributeName::BurgeonBaseDmg, "Q: 苍色岛格", bloom_dmg);
+            }
+            
+            if lunar_dmg > 0.0 {
+                attribute.set_value_by(AttributeName::LunarBloomBaseDmg, "Q: 苍色岛格", lunar_dmg);
+            }
         }
     }
 }
@@ -355,7 +408,7 @@ impl CharacterTrait for Lauma {
         common_data: &CharacterCommonData,
         config: &CharacterConfig,
     ) -> Option<Box<dyn ChangeAttribute<A>>> {
-        let (moonsign_level, spirit_envoy_count, _pale_hymn_stacks) = match *config {
+        let (moonsign_level, spirit_envoy_count, pale_hymn_stacks) = match *config {
             CharacterConfig::Lauma { moonsign_level, spirit_envoy_count, pale_hymn_stacks } => (moonsign_level, spirit_envoy_count, pale_hymn_stacks),
             _ => (2, 3, 0)
         };
@@ -364,6 +417,8 @@ impl CharacterTrait for Lauma {
             has_c2: common_data.constellation >= 2,
             spirit_envoy_count,
             has_c6: common_data.constellation >= 6,
+            pale_hymn_stacks,
+            skill_level_q: common_data.skill3,
         }))
     }
 
