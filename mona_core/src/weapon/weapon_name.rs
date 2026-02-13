@@ -187,6 +187,7 @@ pub enum WeaponName {
     VividNotions,
     NocturnesCurtainCall,
     ReliquaryOfTruth,
+    NightweaversLookingGlass,
 
     // bows
     PolarStar,

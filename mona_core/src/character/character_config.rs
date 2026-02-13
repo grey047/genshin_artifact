@@ -55,7 +55,7 @@ pub enum CharacterConfig {
     Dahlia { is_burning: bool },
     Ineffa { moonsign_level: usize },
     Columbina { moonsign_level: usize, has_moonsign_benediction: bool },
-    Lauma { moonsign_level: usize, spirit_envoy_count: usize },
+    Lauma { moonsign_level: usize, spirit_envoy_count: usize, pale_hymn_stacks: usize },
     Nefer { moonsign_level: usize },
     Aino { moonsign_level: usize, has_moonsign_benediction: bool },
     NoConfig,

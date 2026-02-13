@@ -249,6 +249,14 @@ impl CharacterTrait for Lauma {
             ),
             config: ItemConfigType::Int { min: 0, max: 3, default: 3 },
         },
+        ItemConfig {
+            name: "pale_hymn_stacks",
+            title: locale!(
+                zh_cn: "苍色岛格层数(C6)",
+                en: "Pale Hymn Stacks (C6)"
+            ),
+            config: ItemConfigType::Int { min: 0, max: 18, default: 0 },
+        },
     ]);
 
     fn damage_internal<D: DamageBuilder>(
@@ -262,29 +270,45 @@ impl CharacterTrait for Lauma {
 
         let mut builder = D::new();
 
+        // Extract config values
+        let (spirit_count, pale_hymn_stacks) = if let CharacterSkillConfig::Lauma { spirit_envoy_count, pale_hymn_stacks } = config {
+            (*spirit_envoy_count as f64, *pale_hymn_stacks)
+        } else {
+            (3.0, 0)
+        };
+
         match skill {
             // E2: Direct Lunar-Bloom DMG (EM-based, not ATK-based)
             LaumaDamageEnum::E2 => {
                 let skill_ratio = LAUMA_SKILL.e_dmg2[s2];
                 
-                // Get spirit envoy count from config, default to 3
-                let spirit_count = if let CharacterSkillConfig::Lauma { spirit_envoy_count, .. } = config {
-                    *spirit_envoy_count as f64
-                } else {
-                    3.0
-                };
-                
                 // Direct Lunar-Bloom: EM × skill_ratio × spirit_count
                 let em_ratio = skill_ratio * spirit_count;
                 builder.add_em_ratio("Lunar Bloom Direct", em_ratio);
             }
-            _ => {
-                // Normal skills use ATK
+            // C6: Normal attacks with Pale Hymn consume 1 stack to deal Lunar-Bloom DMG
+            LaumaDamageEnum::Normal1 | LaumaDamageEnum::Normal2 | 
+            LaumaDamageEnum::Normal3 | LaumaDamageEnum::Normal4 => {
                 let ratio = match skill {
                     LaumaDamageEnum::Normal1 => LAUMA_SKILL.normal_dmg1[s1],
                     LaumaDamageEnum::Normal2 => LAUMA_SKILL.normal_dmg2[s1],
                     LaumaDamageEnum::Normal3 => LAUMA_SKILL.normal_dmg3[s1],
                     LaumaDamageEnum::Normal4 => LAUMA_SKILL.normal_dmg4[s1],
+                    _ => 0.0,
+                };
+                
+                // Base ATK damage
+                builder.add_atk_ratio("Normal Attack", ratio);
+                
+                // C6: If has Pale Hymn stacks, add EM-based Lunar-Bloom damage
+                if pale_hymn_stacks > 0 {
+                    // C6: 150% EM as Lunar-Bloom DMG
+                    builder.add_em_ratio("C6 Lunar Bloom", 1.5);
+                }
+            }
+            _ => {
+                // Normal skills use ATK
+                let ratio = match skill {
                     LaumaDamageEnum::Charged => LAUMA_SKILL.charged_dmg[s1],
                     LaumaDamageEnum::Plunging1 => LAUMA_SKILL.plunging_dmg1[s1],
                     LaumaDamageEnum::Plunging2 => LAUMA_SKILL.plunging_dmg2[s1],
@@ -312,9 +336,9 @@ impl CharacterTrait for Lauma {
         common_data: &CharacterCommonData,
         config: &CharacterConfig,
     ) -> Option<Box<dyn ChangeAttribute<A>>> {
-        let (moonsign_level, spirit_envoy_count) = match *config {
-            CharacterConfig::Lauma { moonsign_level, spirit_envoy_count } => (moonsign_level, spirit_envoy_count),
-            _ => (2, 3)
+        let (moonsign_level, spirit_envoy_count, _pale_hymn_stacks) = match *config {
+            CharacterConfig::Lauma { moonsign_level, spirit_envoy_count, pale_hymn_stacks } => (moonsign_level, spirit_envoy_count, pale_hymn_stacks),
+            _ => (2, 3, 0)
         };
         Some(Box::new(LaumaEffect {
             moonsign_level,

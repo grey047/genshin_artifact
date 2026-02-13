@@ -44,6 +44,7 @@ pub use sunny_morning_sleep_in::SunnyMorningSleepIn;
 pub use vivid_notions::VividNotions;
 pub use nocturnes_curtain_call::NocturnesCurtainCall;
 pub use reliquary_of_truth::ReliquaryOfTruth;
+pub use nightweavers_looking_glass::NightweaversLookingGlass;
 
 pub mod lost_prayer_to_the_sacred_winds;
 pub mod skyward_atlas;
@@ -91,3 +92,4 @@ mod sunny_morning_sleep_in;
 mod vivid_notions;
 mod nocturnes_curtain_call;
 mod reliquary_of_truth;
+mod nightweavers_looking_glass;
