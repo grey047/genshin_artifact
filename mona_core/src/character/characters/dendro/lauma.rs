@@ -120,22 +120,41 @@ impl LaumaDamageEnum {
 pub struct LaumaEffect {
     pub moonsign_level: usize,
     pub has_c2: bool,
+    pub spirit_envoy_count: usize, // 草露数量 (1-3)
+    pub has_c6: bool,
 }
 
 impl<A: Attribute> ChangeAttribute<A> for LaumaEffect {
     fn change_attribute(&self, attribute: &mut A) {
-        // A4: Cleansing for the Spring
-        // Each point of EM increases E damage by 0.04%, max 32%
         let em = attribute.get_value(AttributeName::ElementalMastery);
+
+        // A3: Moonsign Benediction: Nature's Chorus
+        // EM × 0.0175% Lunar-Bloom Base DMG, max 14%
+        let a3_bonus = (em * 0.000175).min(0.14);
+        attribute.set_value_by(AttributeName::LunarBloomBaseDmg, "A3: 月兆祝赐·林风迷踪", a3_bonus);
+
+        // A4: Cleansing for the Spring
+        // EM × 0.04% E Skill DMG, max 32%
         let a4_bonus = (em * 0.0004).min(0.32);
         attribute.set_value_by(AttributeName::BonusElementalSkill, "A4: 奉向甘泉的沐濯", a4_bonus);
+
+        // A1: Light for the Frosty Night
+        // Moonsign: Ascendant Gleam - Lunar-Bloom Crit Rate +10%, Crit DMG +20%
+        if self.moonsign_level >= 2 {
+            attribute.set_value_by(AttributeName::LunarBloomCritRate, "A1: 月兆·满辉", 0.10);
+            attribute.set_value_by(AttributeName::LunarBloomCritDMG, "A1: 月兆·满辉", 0.20);
+        }
 
         // C2: Twine Warnings and Tales From the North
         // Lunar-Bloom DMG +40% when Moonsign: Ascendant Gleam
         if self.has_c2 && self.moonsign_level >= 2 {
-            // This is handled in damage calculation for Lunar-Bloom reactions
-            // For now, we add a general Dendro bonus as approximation
-            attribute.set_value_by(AttributeName::BonusDendro, "C2: 月兆·满辉", 0.40);
+            attribute.set_value_by(AttributeName::EnhanceLunarBloom, "C2: 月兆·满辉", 0.40);
+        }
+
+        // C6: I Offer Blood and Tears to the Moonlight
+        // Elevated Lunar-Bloom DMG +25% when Moonsign: Ascendant Gleam
+        if self.has_c6 && self.moonsign_level >= 2 {
+            attribute.set_value_by(AttributeName::ElevateLunarBloom, "C6: 月兆·满辉", 0.25);
         }
     }
 }
@@ -222,34 +241,62 @@ impl CharacterTrait for Lauma {
             ),
             config: ItemConfigType::Int { min: 1, max: 2, default: 2 },
         },
+        ItemConfig {
+            name: "spirit_envoy_count",
+            title: locale!(
+                zh_cn: "草露数量",
+                en: "Spirit Envoy Count"
+            ),
+            config: ItemConfigType::Int { min: 0, max: 3, default: 3 },
+        },
     ]);
 
     fn damage_internal<D: DamageBuilder>(
         context: &DamageContext<'_, D::AttributeType>,
         s: usize,
-        _config: &CharacterSkillConfig,
+        config: &CharacterSkillConfig,
         fumo: Option<Element>,
     ) -> D::Result {
         let skill: LaumaDamageEnum = num::FromPrimitive::from_usize(s).unwrap();
         let (s1, s2, s3) = context.character_common_data.get_3_skill();
 
-        let ratio = match skill {
-            LaumaDamageEnum::Normal1 => LAUMA_SKILL.normal_dmg1[s1],
-            LaumaDamageEnum::Normal2 => LAUMA_SKILL.normal_dmg2[s1],
-            LaumaDamageEnum::Normal3 => LAUMA_SKILL.normal_dmg3[s1],
-            LaumaDamageEnum::Normal4 => LAUMA_SKILL.normal_dmg4[s1],
-            LaumaDamageEnum::Charged => LAUMA_SKILL.charged_dmg[s1],
-            LaumaDamageEnum::Plunging1 => LAUMA_SKILL.plunging_dmg1[s1],
-            LaumaDamageEnum::Plunging2 => LAUMA_SKILL.plunging_dmg2[s1],
-            LaumaDamageEnum::Plunging3 => LAUMA_SKILL.plunging_dmg3[s1],
-            LaumaDamageEnum::E1 => LAUMA_SKILL.e_dmg1[s2],
-            LaumaDamageEnum::E2 => LAUMA_SKILL.e_dmg2[s2],
-            LaumaDamageEnum::E3 => LAUMA_SKILL.e_dmg3[s2],
-            LaumaDamageEnum::Q1 => LAUMA_SKILL.q_dmg1[s3],
-        };
-
         let mut builder = D::new();
-        builder.add_atk_ratio("Skill Ratio", ratio);
+
+        match skill {
+            // E2: Direct Lunar-Bloom DMG (EM-based, not ATK-based)
+            LaumaDamageEnum::E2 => {
+                let skill_ratio = LAUMA_SKILL.e_dmg2[s2];
+                
+                // Get spirit envoy count from config, default to 3
+                let spirit_count = if let CharacterSkillConfig::Lauma { spirit_envoy_count, .. } = config {
+                    *spirit_envoy_count as f64
+                } else {
+                    3.0
+                };
+                
+                // Direct Lunar-Bloom: EM × skill_ratio × spirit_count
+                let em_ratio = skill_ratio * spirit_count;
+                builder.add_em_ratio("Lunar Bloom Direct", em_ratio);
+            }
+            _ => {
+                // Normal skills use ATK
+                let ratio = match skill {
+                    LaumaDamageEnum::Normal1 => LAUMA_SKILL.normal_dmg1[s1],
+                    LaumaDamageEnum::Normal2 => LAUMA_SKILL.normal_dmg2[s1],
+                    LaumaDamageEnum::Normal3 => LAUMA_SKILL.normal_dmg3[s1],
+                    LaumaDamageEnum::Normal4 => LAUMA_SKILL.normal_dmg4[s1],
+                    LaumaDamageEnum::Charged => LAUMA_SKILL.charged_dmg[s1],
+                    LaumaDamageEnum::Plunging1 => LAUMA_SKILL.plunging_dmg1[s1],
+                    LaumaDamageEnum::Plunging2 => LAUMA_SKILL.plunging_dmg2[s1],
+                    LaumaDamageEnum::Plunging3 => LAUMA_SKILL.plunging_dmg3[s1],
+                    LaumaDamageEnum::E1 => LAUMA_SKILL.e_dmg1[s2],
+                    LaumaDamageEnum::E3 => LAUMA_SKILL.e_dmg3[s2],
+                    LaumaDamageEnum::Q1 => LAUMA_SKILL.q_dmg1[s3],
+                    _ => 0.0,
+                };
+                builder.add_atk_ratio("Skill Ratio", ratio);
+            }
+        }
 
         builder.damage(
             &context.attribute,
@@ -265,13 +312,15 @@ impl CharacterTrait for Lauma {
         common_data: &CharacterCommonData,
         config: &CharacterConfig,
     ) -> Option<Box<dyn ChangeAttribute<A>>> {
-        let moonsign_level = match *config {
-            CharacterConfig::Lauma { moonsign_level } => moonsign_level,
-            _ => 2
+        let (moonsign_level, spirit_envoy_count) = match *config {
+            CharacterConfig::Lauma { moonsign_level, spirit_envoy_count } => (moonsign_level, spirit_envoy_count),
+            _ => (2, 3)
         };
         Some(Box::new(LaumaEffect {
             moonsign_level,
             has_c2: common_data.constellation >= 2,
+            spirit_envoy_count,
+            has_c6: common_data.constellation >= 6,
         }))
     }
 

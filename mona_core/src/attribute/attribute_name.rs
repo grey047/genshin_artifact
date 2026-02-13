@@ -113,6 +113,15 @@ pub enum AttributeName {
     EnhanceAggravate,
     EnhanceSpread,
 
+    // Lunar reactions (Moonsign system)
+    EnhanceLunarBloom,        // 月绽放反应伤害加成 (种子)
+    EnhanceLunarCharged,      // 月感电伤害加成
+    EnhanceLunarCrystallize,  // 月结晶伤害加成
+    LunarBloomBaseDmg,        // 月绽放基础伤害加成 (A3天赋)
+    LunarBloomCritRate,       // 月绽放暴击率 (A1天赋)
+    LunarBloomCritDMG,        // 月绽放暴击伤害 (A1天赋)
+    ElevateLunarBloom,        // 直伤月绽放擢升加成 (C6等)
+
     HPRatioBase,
     HPRatioNormalAttack,
     HPRatioChargedAttack,

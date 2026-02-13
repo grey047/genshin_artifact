@@ -259,21 +259,32 @@ impl DamageBuilder for SimpleDamageBuilder {
             Some(dmg)
         };
 
-        // Lunar-Bloom: Hydro + Dendro reaction
-        // Formula: Level Multiplier × 1.0 × (1 + EM Bonus) × (1 + Bonus DMG)
-        // Direct LB multiplier: same as LC = 3.0
+        // Lunar-Bloom: Hydro + Dendro with Moonsign
+        // Creates Verdant Dew and Dendro Cores that can explode or be triggered
+        // Seed damage formula: Level Multiplier × 2.0 × (1 + EM Bonus + Base DMG Bonus + Enhance)
         let lunar_bloom_damage = if element != Element::Hydro {
             None
         } else {
-            let em_bonus_lb = 1.0 + 16.0 * em / (em + 2000.0);
-            let direct_lb_multiplier = 3.0;
+            let reaction_ratio = 2.0; // Same as normal Bloom
+            let em_bonus = Reaction::transformative(em); // 16*EM/(EM+2000)
+            let base_dmg_bonus = attribute.get_value(AttributeName::LunarBloomBaseDmg); // A3 talent
+            let enhance = attribute.get_value(AttributeName::EnhanceLunarBloom);
             
-            let lb_base_damage = base * direct_lb_multiplier;
+            // Base damage (reaction-based, not ATK/DEF/HP based)
+            let lb_base = LEVEL_MULTIPLIER[character_level - 1] 
+                * reaction_ratio 
+                * (1.0 + em_bonus + base_dmg_bonus + enhance);
+            
+            // Seed crit from A1 talent (Moonsign)
+            let lb_crit_rate = attribute.get_value(AttributeName::LunarBloomCritRate);
+            let lb_crit_dmg = attribute.get_value(AttributeName::LunarBloomCritDMG);
+            let total_crit_rate = lb_crit_rate.clamp(0.0, 1.0);
+            let total_crit_dmg = lb_crit_dmg;
             
             let dmg = DamageResult {
-                critical: lb_base_damage * (1.0 + bonus) * (1.0 + critical_damage),
-                non_critical: lb_base_damage * (1.0 + bonus),
-                expectation: lb_base_damage * (1.0 + bonus) * (1.0 + critical_damage * critical_rate),
+                critical: lb_base * (1.0 + bonus) * (1.0 + total_crit_dmg),
+                non_critical: lb_base * (1.0 + bonus),
+                expectation: lb_base * (1.0 + bonus) * (1.0 + total_crit_dmg * total_crit_rate),
                 is_heal: false,
                 is_shield: false
             } * (defensive_ratio * resistance_ratio);

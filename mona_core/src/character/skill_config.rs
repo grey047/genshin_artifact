@@ -78,7 +78,7 @@ pub enum CharacterSkillConfig {
     Ifa,
     Jahoda,
     Ineffa,
-    Lauma,
+    Lauma { spirit_envoy_count: usize },
     Nefer,
     Durin { transmutation_state: usize },
     NoConfig,
