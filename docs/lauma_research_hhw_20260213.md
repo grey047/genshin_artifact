@@ -161,29 +161,49 @@ LaumaDamageEnum::E2 => {
 }
 ```
 
-### C6 185% 伤害 - 需要单独实现 ⚠️
+### E3 - Frostgrove Sanctuary 攻击伤害 - 已修复 ✅
 
-**HHW 描述**: "Frostgrove Sanctuary 攻击时额外造成 185% 精通伤害"
+**HHW 描述**: "Frostgrove Sanctuary Attack DMG = 96% ATK + 192% EM"
 
-**与 E2 的区别**:
-| 伤害类型 | 来源 | 倍率 | 触发条件 |
-|----------|------|------|----------|
-| E2 Hold | 元素战技长按 | 152%-361% EM × 草露数 | 消耗草露 |
-| C6 额外 | Frostgrove Sanctuary 攻击 | 固定 185% EM | 每次攻击最多8次 |
+**AnimeGameData 验证**:
+```
+Lv1: 96.0% ATK + 192.0% EM
+Lv2: 103.2% ATK + 206.4% EM
+Lv10: 172.8% ATK + 345.6% EM
+Lv13: 204.0% ATK + 408.0% EM
+Lv15: 228.0% ATK + 456.0% EM
+```
 
-**状态**: C6 185% 需要作为单独技能实现 (E4 或额外伤害)
+**修复内容**:
+1. 修正 e_dmg3 数组为正确的 ATK% 值
+2. 添加 EM 部分 (ATK% × 2)
+3. 添加 C6 额外 185% EM
+
+**实现** (lauma.rs:317-328):
+```rust
+if skill == LaumaDamageEnum::E3 {
+    // ATK part already added, now add EM part
+    let em_ratio = LAUMA_SKILL.e_dmg3[s2] * 2.0;
+    builder.add_em_ratio("Frostgrove Sanctuary EM", em_ratio);
+    
+    // C6: Additional 185% EM as Lunar-Bloom DMG
+    if constellation >= 6 {
+        builder.add_em_ratio("C6 Frostgrove Extra", 1.85);
+    }
+}
+```
 
 ---
 
 ## 7. 结论
 
-1. **核心机制已实现**: A1/A3/A4/C2/C6的关键加成
-2. **C6 185% 已修正**: 召唤物伤害现在正确
-3. **E2 需要重新审视**: 当前实现与HHW数据不完全匹配
-4. **Pale Hymn (Q)**: Burst的完整机制较复杂，可以延后实现
+1. **E2 Hold**: ✅ 已修正为使用正确技能倍率 (152%-361% EM × 草露数)
+2. **E3 Frostgrove**: ✅ 已修正为 ATK + EM，并添加 C6 额外 185%
+3. **核心机制已实现**: A1/A3/A4/C2/C6 的关键加成
+4. **Pale Hymn (Q)**: Burst 的完整层数机制较复杂，可以延后实现
 
 ---
 
 **Research By**: Compass  
-**Source**: HHW (Honey Hunter World)  
+**Sources**: AnimeGameData (skill depot 11901), HHW (Honey Hunter World)  
 **Date**: 2026-02-13

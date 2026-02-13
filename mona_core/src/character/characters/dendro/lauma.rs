@@ -77,8 +77,9 @@ pub const LAUMA_SKILL: LaumaSkillType = LaumaSkillType {
         6.536, 6.928,
     ],
     e_dmg3: [
-        1.280, 1.382, 1.484, 1.634, 1.736, 1.838, 1.988, 2.138, 2.288, 2.486, 2.684, 2.882, 3.080,
-        3.278, 3.476,
+        // Frostgrove Sanctuary: ATK% + EM% (EM% = ATK% × 2)
+        // Lv1: 96% ATK + 192% EM, Lv10: 172.8% ATK + 345.6% EM, Lv13: 204% ATK + 408% EM
+        0.96, 1.032, 1.104, 1.20, 1.272, 1.344, 1.44, 1.536, 1.632, 1.728, 1.824, 1.92, 2.04, 2.16, 2.28,
     ],
     // Elemental Burst Multipliers (Runo: All Hearts Become the Beating Moon)
     q_dmg1: [
@@ -315,11 +316,27 @@ impl CharacterTrait for Lauma {
                     LaumaDamageEnum::Plunging2 => LAUMA_SKILL.plunging_dmg2[s1],
                     LaumaDamageEnum::Plunging3 => LAUMA_SKILL.plunging_dmg3[s1],
                     LaumaDamageEnum::E1 => LAUMA_SKILL.e_dmg1[s2],
-                    LaumaDamageEnum::E3 => LAUMA_SKILL.e_dmg3[s2],
                     LaumaDamageEnum::Q1 => LAUMA_SKILL.q_dmg1[s3],
                     _ => 0.0,
                 };
-                builder.add_atk_ratio("Skill Ratio", ratio);
+                
+                if ratio > 0.0 {
+                    builder.add_atk_ratio("Skill Ratio", ratio);
+                }
+                
+                // E3: Frostgrove Sanctuary - ATK + EM based
+                if skill == LaumaDamageEnum::E3 {
+                    // ATK part already added above, now add EM part
+                    // Lv1: 192% EM, Lv10: 345.6% EM, Lv13: 408% EM, Lv15: 456% EM
+                    let em_ratio = LAUMA_SKILL.e_dmg3[s2] * 2.0; // EM ratio is 2x the stored value (which is ATK%)
+                    builder.add_em_ratio("Frostgrove Sanctuary EM", em_ratio);
+                    
+                    // C6: Additional 185% EM as Lunar-Bloom DMG
+                    let constellation = context.character_common_data.constellation;
+                    if constellation >= 6 {
+                        builder.add_em_ratio("C6 Frostgrove Extra", 1.85);
+                    }
+                }
             }
         }
 
