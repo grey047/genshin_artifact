@@ -40,7 +40,9 @@
       "Bash(powershell -Command:*)",
       "Bash(cmd /c \"cd /d e:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm\")",
       "Bash(cmd /c \"cd /d e:\\\\Moltbot\\\\workspace\\\\genshin_artifact && npm run build:wasm 2>&1\")",
-      "Bash(cargo check:*)"
+      "Bash(cargo check:*)",
+      "Bash(git -C /mnt/e/Moltbot/workspace/genshin_artifact log --oneline -5)",
+      "Bash(git -C /mnt/e/Moltbot/workspace/genshin_artifact diff HEAD~3..HEAD)"
     ]
   }
 }

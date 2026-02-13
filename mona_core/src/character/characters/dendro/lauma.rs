@@ -73,8 +73,9 @@ pub const LAUMA_SKILL: LaumaSkillType = LaumaSkillType {
         5.214, 5.524,
     ],
     e_dmg2: [
-        2.560, 2.768, 2.976, 3.272, 3.480, 3.688, 3.984, 4.280, 4.576, 4.968, 5.360, 5.752, 6.144,
-        6.536, 6.928,
+        // 2-Hit Hold DMG - EM per Verdant Dew (Lunar-Bloom DMG)
+        // Lv1: 152%, Lv10: 273.6%, Lv13: 323%, Lv15: 361%
+        1.52, 1.634, 1.748, 1.90, 2.014, 2.128, 2.28, 2.432, 2.584, 2.736, 2.888, 3.04, 3.23, 3.42, 3.61,
     ],
     e_dmg3: [
         // Frostgrove Sanctuary: ATK% + EM% (EM% = ATK% × 2)
