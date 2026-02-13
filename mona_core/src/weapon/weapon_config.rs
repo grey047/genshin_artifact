@@ -123,7 +123,7 @@ pub enum WeaponConfig {
     VividNotions { rate1: f64, rate2: f64 },
     NocturnesCurtainCall { stack: f64 },
     ReliquaryOfTruth { spectral_stack: f64 },
-    NightweaversLookingGlass { refine: usize },
+    NightweaversLookingGlass { has_prayer: bool, verse_stacks: usize },
 
     // Bow
     PolarStar { stack: usize },

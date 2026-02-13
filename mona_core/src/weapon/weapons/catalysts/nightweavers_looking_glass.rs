@@ -11,24 +11,33 @@ use crate::weapon::weapon_sub_stat::WeaponSubStatFamily;
 use crate::weapon::weapon_trait::WeaponTrait;
 use crate::weapon::{WeaponConfig, WeaponName};
 
-pub struct NightweaversLookingGlassEffect;
+pub struct NightweaversLookingGlassEffect {
+    pub has_prayer: bool,
+    pub verse_stacks: usize,
+}
 
 impl<A: Attribute> WeaponEffect<A> for NightweaversLookingGlassEffect {
-    fn apply(&self,
-        data: &WeaponCommonData,
-        attribute: &mut A
-    ) {
+    fn apply(&self, data: &WeaponCommonData, attribute: &mut A) {
         let refine = data.refine as usize;
-        
-        // Prayer of the Far North + New Moon Verse (3 stacks)
-        // EM bonus: 60-120 (base) + 60-120 * 3 (stacks) = 240-480
         let em_per_stack = [60.0, 75.0, 90.0, 105.0, 120.0][refine - 1];
-        let total_em = em_per_stack * 4.0; // 1 base + 3 stacks
         
-        attribute.set_value_by(AttributeName::ElementalMastery, "Millennial Hymn", total_em);
+        // Prayer of the Far North: 1 stack EM bonus
+        let prayer_em = if self.has_prayer { em_per_stack } else { 0.0 };
+        
+        // New Moon Verse: 0-3 stacks EM bonus
+        let verse_stacks = self.verse_stacks.min(3);
+        let verse_em = em_per_stack * verse_stacks as f64;
+        
+        let total_em = prayer_em + verse_em;
+        
+        if total_em > 0.0 {
+            attribute.set_value_by(AttributeName::ElementalMastery, "Millennial Hymn", total_em);
+        }
         
         // At 3 stacks: Lunar-Bloom DMG +40%
-        attribute.set_value_by(AttributeName::EnhanceLunarBloom, "Millennial Hymn", 0.40);
+        if verse_stacks >= 3 {
+            attribute.set_value_by(AttributeName::EnhanceLunarBloom, "Millennial Hymn", 0.40);
+        }
     }
 }
 
@@ -55,12 +64,36 @@ impl WeaponTrait for NightweaversLookingGlass {
     };
 
     #[cfg(not(target_family = "wasm"))]
-    const CONFIG_DATA: Option<&'static [ItemConfig]> = None;
+    const CONFIG_DATA: Option<&'static [ItemConfig]> = Some(&[
+        ItemConfig {
+            name: "has_prayer",
+            title: locale!(
+                zh_cn: "极北祝颂",
+                en: "Prayer of the Far North",
+            ),
+            config: ItemConfigType::Bool { default: true },
+        },
+        ItemConfig {
+            name: "verse_stacks",
+            title: locale!(
+                zh_cn: "新月诗篇层数",
+                en: "New Moon Verse Stacks",
+            ),
+            config: ItemConfigType::Int { min: 0, max: 3, default: 3 },
+        },
+    ]);
 
     fn get_effect<A: Attribute>(
         _character: &CharacterCommonData,
-        _config: &WeaponConfig
+        config: &WeaponConfig
     ) -> Option<Box<dyn WeaponEffect<A>>> {
-        Some(Box::new(NightweaversLookingGlassEffect))
+        if let WeaponConfig::NightweaversLookingGlass { has_prayer, verse_stacks } = config {
+            Some(Box::new(NightweaversLookingGlassEffect {
+                has_prayer: *has_prayer,
+                verse_stacks: *verse_stacks,
+            }))
+        } else {
+            None
+        }
     }
 }
