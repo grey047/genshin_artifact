@@ -279,12 +279,18 @@ impl CharacterTrait for Lauma {
 
         match skill {
             // E2: Direct Lunar-Bloom DMG (EM-based, not ATK-based)
+            // C6: Spirit Envoys deal 185% EM as Lunar-Bloom DMG
             LaumaDamageEnum::E2 => {
-                let skill_ratio = LAUMA_SKILL.e_dmg2[s2];
-                
-                // Direct Lunar-Bloom: EM × skill_ratio × spirit_count
-                let em_ratio = skill_ratio * spirit_count;
-                builder.add_em_ratio("Lunar Bloom Direct", em_ratio);
+                let constellation = context.character_common_data.constellation;
+                if constellation >= 6 {
+                    // C6: 185% EM as Lunar-Bloom DMG
+                    builder.add_em_ratio("C6 Spirit Envoy Lunar Bloom", 1.85);
+                } else {
+                    // Pre-C6: Use skill ratio (if applicable)
+                    let skill_ratio = LAUMA_SKILL.e_dmg2[s2];
+                    let em_ratio = skill_ratio * spirit_count;
+                    builder.add_em_ratio("Lunar Bloom Direct", em_ratio);
+                }
             }
             // C6: Normal attacks with Pale Hymn consume 1 stack to deal Lunar-Bloom DMG
             LaumaDamageEnum::Normal1 | LaumaDamageEnum::Normal2 | 
